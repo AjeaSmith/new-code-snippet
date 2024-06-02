@@ -1,5 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
+import FolderList from "@/components/FolderList";
+import SnippetsByFolder from "@/components/SnippetsByFolder";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -12,45 +14,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
 	return (
 		<html lang="en">
-			<body className="h-screen flex font-sans">
-				{/* Notes Sidebar */}
-				<aside className="w-1/5 bg-gray-50 border-r border-gray-200 p-4 overflow-y-auto">
-					<h1 className="text-3xl font-bold mb-6">Notes</h1>
-					<nav>
-						<ul>
-							<li className="p-4 hover:bg-gray-200 cursor-pointer rounded-md">
-								<a href="/notes/1">Note 1</a>
-							</li>
-							<li className="p-4 hover:bg-gray-200 cursor-pointer rounded-md">
-								<a href="/notes/2">Note 2</a>
-							</li>
-							<li className="p-4 hover:bg-gray-200 cursor-pointer rounded-md">
-								<a href="/notes/3">Note 3</a>
-							</li>
-						</ul>
-					</nav>
-				</aside>
-
-				{/* Items Sidebar (conditionally rendered) */}
-				<aside className="w-1/5 bg-gray-50 border-r border-gray-200 p-4 overflow-y-auto">
-					<nav>
-						{/* This section will be dynamically updated based on the selected note */}
-						<h1 className="text-3xl font-bold mb-6">Items</h1>
-						<ul>
-							<li className="p-4 hover:bg-gray-200 cursor-pointer rounded-md">
-								<a href="/notes/1/items/1">Item 1</a>
-							</li>
-							<li className="p-4 hover:bg-gray-200 cursor-pointer rounded-md">
-								<a href="/notes/1/items/2">Item 2</a>
-							</li>
-							<li className="p-4 hover:bg-gray-200 cursor-pointer rounded-md">
-								<a href="/notes/1/items/3">Item 3</a>
-							</li>
-						</ul>
-					</nav>
-				</aside>
-
-				{/* Main Content */}
+			<body className={`${inter.className} h-screen flex`}>
+				<FolderList />
+				<SnippetsByFolder />
 				<main className="w-3/5 p-6 overflow-y-auto">{children}</main>
 			</body>
 		</html>
