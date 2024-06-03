@@ -5,13 +5,14 @@ const items = {
 };
 
 export default function ItemsPage({ params }) {
-	const { noteId } = params;
-	const itemList = items[noteId] || ["No items available"];
+	const { folderId } = params;
+	const itemList = items[folderId] || ["No items available"];
 
 	return (
 		<div>
 			<h2 className="text-2xl font-semibold mb-4">Items in Note {id}</h2>
 			<ul className="list-disc pl-5">
+				test
 				{itemList.map((item, index) => (
 					<li key={index} className="text-gray-700">
 						{item}

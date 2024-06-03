@@ -1,4 +1,4 @@
-import NotesPage from "./notes/page";
+import NotesPage from "./folder/page";
 
 export default function Home({ params }) {
 	

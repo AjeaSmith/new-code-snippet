@@ -1,4 +1,4 @@
-export default function EmptyNotesView({ params }) {
+export default function EmptyNotesView() {
 	return (
 		<div className="w-3/4 p-6 overflow-y-auto">
 			<h2 className="text-2xl font-semibold mb-4">Select a Snippet</h2>
