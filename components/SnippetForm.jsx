@@ -1,14 +1,11 @@
 "use client";
-
-import { FolderPlusIcon } from "lucide-react";
-import { useForm } from "react-hook-form";
 import {
 	Dialog,
 	DialogContent,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger,
 	DialogFooter,
+	DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -20,50 +17,61 @@ import {
 	FormLabel,
 	FormMessage,
 } from "./ui/form";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 
-export default function AddFolderButton() {
-	const [isFieldEmpty, setFieldEmpty] = useState(true);
-
+export default function SnippetForm({ open, onOpenChange }) {
 	const form = useForm({
 		defaultValues: {
 			name: "",
 		},
 	});
-	const onSubmit = async (values) => {
-		//   TODO: how to disable submit button if name field is empty (ChatGPT)
-		console.log(values);
-		// TODO: Add Folder
-	};
+
+	const {
+		watch,
+		formState: { errors },
+	} = form;
+
+	// Watch the name field
+	const name = watch("name");
+
+	const onSubmit = async (values) => {};
 	return (
-		<Dialog>
-			<DialogTrigger className="my-2 w-full py-2 | flex items-center justify-center gap-3 | bg-[#4444FE] rounded-md shadow-md | text-white">
-				<FolderPlusIcon />
-				New Folder
-			</DialogTrigger>
+		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="sm:max-w-[425px]">
 				<DialogHeader className="mb-2">
-					<DialogTitle>Create a folder</DialogTitle>
+					<DialogTitle>Add a code snippet</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)}>
 						<FormField
 							control={form.control}
 							name="name"
+							rules={{
+								validate: (value) =>
+									value.trim() !== "" || "Name cannot be empty or just spaces",
+							}}
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel>Name</FormLabel>
 									<FormControl>
 										<Input type="text" placeholder="React" {...field} />
 									</FormControl>
-									<FormMessage />
+									<FormMessage>
+										{errors.name && errors.name.message}
+									</FormMessage>
 								</FormItem>
 							)}
 						/>
 						<DialogFooter className="mt-5">
-							<Button className="bg-[#21768A]" type="submit">
-								Save changes
-							</Button>
+							<DialogClose>
+								<Button
+									className="bg-[#21768A]"
+									type="submit"
+									disabled={!name.trim()}
+								>
+									Save
+								</Button>
+							</DialogClose>
 						</DialogFooter>
 					</form>
 				</Form>

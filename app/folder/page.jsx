@@ -1,5 +1,5 @@
 import EmptyNotesView from "@/components/EmptyNotesView";
 
-export default function NotesPage() {
+export default function Page() {
 	return <EmptyNotesView />;
 }

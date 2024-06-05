@@ -1,7 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import FolderList from "@/components/FolderList";
-import SnippetsByFolder from "@/components/SnippetsByFolder";
+import SnippetList from "@/components/SnippetList";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,8 +16,8 @@ export default function RootLayout({ children }) {
 		<html lang="en">
 			<body className={`${inter.className} h-screen flex`}>
 				<FolderList />
-				<SnippetsByFolder />
-				<main className="w-3/5 p-6 overflow-y-auto">{children}</main>
+				<SnippetList />
+				<main className="w-3/5 p-6 overflow-y-auto">{children}</main>;
 			</body>
 		</html>
 	);

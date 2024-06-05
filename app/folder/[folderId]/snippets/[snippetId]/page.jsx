@@ -1,6 +1,6 @@
 import { snippets } from "@/lib/data";
 
-export default function ItemDetailPage({ params }) {
+export default function SnippetDetailPage({ params }) {
 	const { noteId, itemId } = params;
 
 	const snippet = snippets.find(

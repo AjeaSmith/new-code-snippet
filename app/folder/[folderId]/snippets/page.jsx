@@ -4,7 +4,7 @@ const items = {
 	3: ["Item X", "Item Y", "Item Z"],
 };
 
-export default function ItemsPage({ params }) {
+export default function SnippetsPage({ params }) {
 	const { folderId } = params;
 	const itemList = items[folderId] || ["No items available"];
 
