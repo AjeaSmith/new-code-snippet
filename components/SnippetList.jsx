@@ -16,7 +16,7 @@ export default function SnippetList() {
 	const snippetsByFolder = snippets.filter(
 		(snippet) => snippet.folderId === Number(folderId)
 	);
-	
+
 	const handleEditClick = () => {
 		setDialogOpen(true);
 	};
@@ -28,9 +28,11 @@ export default function SnippetList() {
 					{/* This section will be dynamically updated based on the selected note */}
 					<div className="flex items-center justify-between">
 						<h1 className="text-3xl font-bold">Snippets</h1>
-						<button onClick={handleEditClick}>
-							<PlusCircleIcon />
-						</button>
+						{folderId && (
+							<button onClick={handleEditClick}>
+								<PlusCircleIcon />
+							</button>
+						)}
 					</div>
 					<ul>
 						{snippetsByFolder.map((snip) => (
@@ -46,7 +48,11 @@ export default function SnippetList() {
 					</ul>
 				</nav>
 			</aside>
-			<SnippetForm dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} />
+			<SnippetForm
+				open={dialogOpen}
+				onOpenChange={setDialogOpen}
+				folderId={folderId}
+			/>
 		</>
 	);
 }
