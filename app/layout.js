@@ -17,7 +17,7 @@ export default function RootLayout({ children }) {
 			<body className={`${inter.className} h-screen flex`}>
 				<FolderList />
 				<SnippetList />
-				<main className="w-3/5 p-6 overflow-y-auto">{children}</main>;
+				<main className="w-3/5 p-6 overflow-y-auto">{children}</main>
 			</body>
 		</html>
 	);

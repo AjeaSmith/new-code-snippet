@@ -1,7 +1,7 @@
 import EmptyNotesView from "@/components/EmptyNotesView";
 
 export default function Page({ params }) {
-	const { id } = params;
+	const { folderId } = params;
 
-	return !id ? <EmptyNotesView /> : null;
+	return !folderId ? <EmptyNotesView /> : null;
 }

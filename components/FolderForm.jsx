@@ -92,7 +92,7 @@ export default function FolderForm({ open, onOpenChange, type }) {
 						<DialogFooter className="mt-5">
 							<DialogClose>
 								<Button
-									className="bg-[#21768A]"
+									className="bg-[#4444FE]"
 									type="submit"
 									disabled={!name.trim()}
 								>

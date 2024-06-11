@@ -1,7 +1,6 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	Dialog,
@@ -9,7 +8,6 @@ import {
 	DialogHeader,
 	DialogTitle,
 	DialogFooter,
-	DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -33,8 +31,11 @@ import {
 import CodeEditor from "./AceEditor";
 import { languages } from "@/lib/constants";
 import { SnippetValidation } from "@/lib/validations/snippet";
+import { createSnippet } from "@/lib/actions/snippet.actions";
+import { usePathname } from "next/navigation";
 
 export default function SnippetForm({ open, onOpenChange, folderId }) {
+	const pathname = usePathname();
 	const form = useForm({
 		resolver: zodResolver(SnippetValidation),
 		defaultValues: {
@@ -45,22 +46,37 @@ export default function SnippetForm({ open, onOpenChange, folderId }) {
 		},
 	});
 
-	const {
-		watch,
-		formState: { errors },
-	} = form;
+	const { watch } = form;
 
 	// Watch the name/language field
-	const name = watch("name");
 	const language = watch("language");
+
+	// Function to handle form reset
+	const handleOnClose = (isOpen) => {
+		if (!isOpen) {
+			form.reset();
+		}
+		onOpenChange(isOpen);
+	};
 
 	const onSubmit = async (values) => {
 		form.reset();
-		// TODO: Add snippet to DB
-		console.log(values);
+
+		const { name, description, code, language } = values;
+
+		await createSnippet({
+			name,
+			description,
+			code,
+			language,
+			folderId,
+			pathname,
+		});
+
+		onOpenChange(false);
 	};
 	return (
-		<Dialog open={open} onOpenChange={onOpenChange}>
+		<Dialog open={open} onOpenChange={handleOnClose}>
 			<DialogContent>
 				<DialogHeader className="mb-2">
 					<DialogTitle>Add a code snippet</DialogTitle>
@@ -73,19 +89,13 @@ export default function SnippetForm({ open, onOpenChange, folderId }) {
 						<FormField
 							control={form.control}
 							name="name"
-							rules={{
-								validate: (value) =>
-									value.trim() !== "" || "Name cannot be empty or just spaces",
-							}}
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel>Name</FormLabel>
 									<FormControl>
 										<Input type="text" placeholder="e.g React" {...field} />
 									</FormControl>
-									<FormMessage>
-										{errors.name && errors.name.message}
-									</FormMessage>
+									<FormMessage />
 								</FormItem>
 							)}
 						/>
@@ -94,7 +104,7 @@ export default function SnippetForm({ open, onOpenChange, folderId }) {
 							name="description"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Description</FormLabel>
+									<FormLabel>Description (optional)</FormLabel>
 									<FormControl>
 										<Input
 											type="text"
@@ -102,9 +112,6 @@ export default function SnippetForm({ open, onOpenChange, folderId }) {
 											{...field}
 										/>
 									</FormControl>
-									<FormMessage>
-										{errors.name && errors.name.message}
-									</FormMessage>
 								</FormItem>
 							)}
 						/>
@@ -154,7 +161,7 @@ export default function SnippetForm({ open, onOpenChange, folderId }) {
 							<Button className="bg-[#4444FE]" type="submit">
 								Save
 							</Button>
-					</DialogFooter>
+						</DialogFooter>
 					</form>
 				</Form>
 			</DialogContent>
