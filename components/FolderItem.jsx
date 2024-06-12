@@ -11,7 +11,6 @@ export default function FolderItem({ folder }) {
 		pathname === folder._id;
 	return (
 		<li
-			key={folder._id}
 			className={`py-3 px-2 mt-2 | flex items-center justify-between gap-3 | rounded-md hover:bg-[#131415] cursor-pointer ${
 				isActive && "bg-[#131415]"
 			}`}
@@ -19,7 +18,7 @@ export default function FolderItem({ folder }) {
 			<span className="flex items-center gap-x-3 px-3">
 				<div
 					className={`w-[8px] h-[8px] | rounded-full ${
-						isActive ? "bg-green-400" : "bg-green-600"
+						isActive ? "bg-green-400" : "bg-green-700"
 					}`}
 				/>
 				<Link

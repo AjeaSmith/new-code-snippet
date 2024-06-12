@@ -1,6 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import useSWR, { mutate } from "swr";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	Dialog,
@@ -36,6 +37,7 @@ import { usePathname } from "next/navigation";
 
 export default function SnippetForm({ open, onOpenChange, folderId }) {
 	const pathname = usePathname();
+
 	const form = useForm({
 		resolver: zodResolver(SnippetValidation),
 		defaultValues: {
@@ -72,7 +74,7 @@ export default function SnippetForm({ open, onOpenChange, folderId }) {
 			folderId,
 			pathname,
 		});
-
+		mutate(`snippets|${folderId}`);
 		onOpenChange(false);
 	};
 	return (
