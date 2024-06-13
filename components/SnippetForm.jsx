@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import useSWR, { mutate } from "swr";
+import { mutate } from "swr";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	Dialog,
