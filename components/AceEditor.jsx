@@ -22,16 +22,17 @@ import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/ext-language_tools";
 
-const CodeEditor = ({ lang, ...props }) => {
+const CodeEditor = ({ lang, value, onChange }) => {
 	return (
 		<AceEditor
-			{...props}
+			name="code"
+			value={value}
+			onChange={onChange}
 			width="100%"
-			height="200px"
+			height="300px"
 			mode={lang}
-			theme="github"
+			theme="monokai"
 			setOptions={{ useWorker: false }}
-			name="code-editor"
 			editorProps={{ $blockScrolling: true }}
 		/>
 	);

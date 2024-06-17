@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useState } from "react";
 import { MoreHorizontal, PencilIcon, Trash } from "lucide-react";
 
 import {
@@ -17,8 +17,8 @@ import FolderForm from "./FolderForm";
 import { deleteFolderById } from "@/lib/actions/folder.actions";
 
 export default function FolderActions({ folderId }) {
-	const [open, setOpen] = React.useState(false);
-	const [dialogOpen, setDialogOpen] = React.useState(false);
+	const [open, setOpen] = useState(false);
+	const [dialogOpen, setDialogOpen] = useState(false);
 
 	const handleEditClick = () => {
 		setDialogOpen(true);

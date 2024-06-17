@@ -31,7 +31,7 @@ export default function FolderForm({ open, onOpenChange, type }) {
 
 	const form = useForm({
 		defaultValues: {
-			name: "",
+			name: "" ,
 		},
 	});
 

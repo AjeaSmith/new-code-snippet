@@ -1,5 +1,3 @@
-import EmptyNotesView from "@/components/EmptyNotesView";
-
-export default function Page() {
-	return <EmptyNotesView />
+export default function App() {
+	return null;
 }

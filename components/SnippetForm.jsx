@@ -1,26 +1,14 @@
 "use client";
-
-import { useForm } from "react-hook-form";
-import { mutate } from "swr";
+import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { SnippetValidation } from "@/lib/validations/snippet";
 import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-	DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import {
-	Form,
 	FormControl,
 	FormField,
 	FormItem,
 	FormLabel,
 	FormMessage,
 } from "./ui/form";
-
 import {
 	Select,
 	SelectContent,
@@ -28,96 +16,80 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import {
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
-import CodeEditor from "./AceEditor";
+import { Button } from "./ui/button";
 import { languages } from "@/lib/constants";
-import { SnippetValidation } from "@/lib/validations/snippet";
-import { createSnippet } from "@/lib/actions/snippet.actions";
-import { usePathname } from "next/navigation";
+import CodeEditor from "./AceEditor";
+import { createSnippet, editSnippetById } from "@/lib/actions/snippet.actions";
+import { useRouter } from "next/navigation";
+import { mutate } from "swr";
 
-export default function SnippetForm({ open, onOpenChange, folderId }) {
-	const pathname = usePathname();
+export default function SnippetForm({ snippet, folderId }) {
+	const router = useRouter();
 
 	const form = useForm({
 		resolver: zodResolver(SnippetValidation),
 		defaultValues: {
-			name: "",
-			description: "",
-			code: "",
-			language: "javascript",
+			name: snippet ? snippet.name : "",
+			description: snippet ? snippet.description : "",
+			code: snippet ? snippet.code : "",
+			language: snippet ? snippet.language : "javascript",
 		},
 	});
 
-	const { watch } = form;
-
-	// Watch the name/language field
-	const language = watch("language");
-
-	// Function to handle form reset
-	const handleOnClose = (isOpen) => {
-		if (!isOpen) {
-			form.reset();
-		}
-		onOpenChange(isOpen);
-	};
+	const language = form.watch("language");
 
 	const onSubmit = async (values) => {
-		form.reset();
+		if (snippet) {
+			await editSnippetById(snippet._id, folderId, values);
+			router.push(`/folder/${folderId}/snippet/${snippet._id}`);
+		} else {
+			await createSnippet({ ...values, folderId: folderId });
+			router.push(`/folder/${folderId}`);
+		}
 
-		const { name, description, code, language } = values;
-
-		await createSnippet({
-			name,
-			description,
-			code,
-			language,
-			folderId,
-			pathname,
-		});
 		mutate(`snippets|${folderId}`);
-		onOpenChange(false);
 	};
+
 	return (
-		<Dialog open={open} onOpenChange={handleOnClose}>
-			<DialogContent>
-				<DialogHeader className="mb-2">
-					<DialogTitle>Add a code snippet</DialogTitle>
-				</DialogHeader>
-				<Form {...form}>
+		<Card>
+			<CardHeader>
+				<CardTitle>
+					{snippet ? `Editing: ${snippet.name} ` : "Create a snippet"}
+				</CardTitle>
+			</CardHeader>
+			<CardContent>
+				<FormProvider {...form}>
 					<form
 						onSubmit={form.handleSubmit(onSubmit)}
-						className="flex flex-col space-y-5"
+						className="flex flex-col gap-5"
 					>
-						<FormField
-							control={form.control}
-							name="name"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Name</FormLabel>
-									<FormControl>
-										<Input type="text" placeholder="e.g React" {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="description"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Description (optional)</FormLabel>
-									<FormControl>
-										<Input
-											type="text"
-											placeholder="e.g Remove special characters from url"
-											{...field}
-										/>
-									</FormControl>
-								</FormItem>
-							)}
-						/>
-
+						{["name", "description"].map((field) => (
+							<FormField
+								key={field}
+								control={form.control}
+								name={field}
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>
+											{field.name.charAt(0).toUpperCase() + field.name.slice(1)}
+										</FormLabel>
+										<FormControl>
+											<Input type="text" {...field} />
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						))}
 						<FormField
 							control={form.control}
 							name="language"
@@ -153,20 +125,24 @@ export default function SnippetForm({ open, onOpenChange, folderId }) {
 								<FormItem>
 									<FormLabel>Write or paste code</FormLabel>
 									<FormControl>
-										<CodeEditor lang={language} {...field} />
+										<CodeEditor
+											lang={language}
+											value={field.value}
+											onChange={field.onChange}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
 							)}
 						/>
-						<DialogFooter className="mt-5">
-							<Button className="bg-[#4444FE]" type="submit">
-								Save
+						<CardFooter className="flex justify-end">
+							<Button type="submit">
+								{snippet ? "Save Changes" : "Create"}
 							</Button>
-						</DialogFooter>
+						</CardFooter>
 					</form>
-				</Form>
-			</DialogContent>
-		</Dialog>
+				</FormProvider>
+			</CardContent>
+		</Card>
 	);
 }
