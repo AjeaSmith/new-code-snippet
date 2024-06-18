@@ -6,8 +6,8 @@ export default async function FolderList() {
 	const folders = await fetchFolders();
 
 	return (
-		<aside className="p-4 w-1/5 bg-[#1E1F21] border-r border-gray-200 overflow-y-auto | text-white">
-			<FolderForm type="create" />
+		<aside className="pt-6 px-4 w-1/5 bg-folder overflow-y-auto | text-white">
+			<FolderForm />
 			<nav className="mt-5">
 				<ul>
 					{folders.map((folder) => {

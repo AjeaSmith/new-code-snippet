@@ -37,18 +37,19 @@ export default function SnippetList() {
 		);
 
 	return (
-		<aside className="w-1/4 bg-gray-50 border-r border-gray-200 p-4 overflow-y-auto">
-			{pathname === "/" ? null : !folderData || !snippetData ? (
+		<aside className="py-6 px-4 w-1/4 | bg-snippet border-r-2 border-black | text-white | overflow-y-auto">
+			{pathname === "/" || pathname === "/folder" ? null : !folderData || !snippetData ? (
 				<p>Loading...</p>
 			) : (
 				<>
-					<div className="flex items-center justify-between mb-5">
-						<h1 className="text-xl font-bold">
-							{truncateText(folderData.name, 20)} ({snippetData.length})
+					<div className="mb-8 | flex items-center justify-between">
+						<h1 className="text-xl text-white/65 | font-semibold">
+							{truncateText(folderData.name, 20)} 
+							<span className="text-white/50 ml-2">({snippetData.length})</span>
 						</h1>
 						<div className="flex space-x-3">
 							<Link href={`/folder/${folderId}/snippet/create`}>
-								<PlusCircleIcon className="text-[#4444FE]" />
+								<PlusCircleIcon className="text-accent" />
 							</Link>
 						</div>
 					</div>

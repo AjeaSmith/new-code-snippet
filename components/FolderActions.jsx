@@ -16,7 +16,7 @@ import {
 import FolderForm from "./FolderForm";
 import { deleteFolderById } from "@/lib/actions/folder.actions";
 
-export default function FolderActions({ folderId }) {
+export default function FolderActions({ folderId, folderName }) {
 	const [open, setOpen] = useState(false);
 	const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -28,7 +28,7 @@ export default function FolderActions({ folderId }) {
 		<>
 			<DropdownMenu open={open} onOpenChange={setOpen}>
 				<DropdownMenuTrigger asChild>
-					<MoreHorizontal className="text-[#4444FE]/85" />
+					<MoreHorizontal className="text-accent/85" />
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="end" className="w-[200px]">
 					<DropdownMenuGroup>
@@ -48,7 +48,11 @@ export default function FolderActions({ folderId }) {
 					</DropdownMenuGroup>
 				</DropdownMenuContent>
 			</DropdownMenu>
-			<FolderForm open={dialogOpen} onOpenChange={setDialogOpen} type="edit" />
+			<FolderForm
+				open={dialogOpen}
+				onOpenChange={setDialogOpen}
+				folderName={folderName}
+			/>
 		</>
 	);
 }

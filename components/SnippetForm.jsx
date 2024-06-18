@@ -1,5 +1,5 @@
 "use client";
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm, FormProvider, useFormState } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SnippetValidation } from "@/lib/validations/snippet";
 import {
@@ -31,6 +31,7 @@ import CodeEditor from "./AceEditor";
 import { createSnippet, editSnippetById } from "@/lib/actions/snippet.actions";
 import { useRouter } from "next/navigation";
 import { mutate } from "swr";
+import { CircleEllipsisIcon, LoaderCircleIcon } from "lucide-react";
 
 export default function SnippetForm({ snippet, folderId }) {
 	const router = useRouter();
@@ -44,6 +45,8 @@ export default function SnippetForm({ snippet, folderId }) {
 			language: snippet ? snippet.language : "javascript",
 		},
 	});
+
+	const { isSubmitting } = useFormState({ control: form.control });
 
 	const language = form.watch("language");
 
@@ -136,8 +139,19 @@ export default function SnippetForm({ snippet, folderId }) {
 							)}
 						/>
 						<CardFooter className="flex justify-end">
-							<Button type="submit">
-								{snippet ? "Save Changes" : "Create"}
+							<Button
+								type="submit"
+								disabled={isSubmitting}
+								className="bg-accent hover:bg-accent/50"
+							>
+								{isSubmitting ? (
+									<>
+										<LoaderCircleIcon className="animate-spin mr-2" />
+										{snippet ? "Saving..." : "Creating..."}
+									</>
+								) : (
+									<span>{snippet ? "Save Changes" : "Create"}</span>
+								)}
 							</Button>
 						</CardFooter>
 					</form>

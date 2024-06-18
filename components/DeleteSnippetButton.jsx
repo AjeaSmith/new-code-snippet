@@ -1,3 +1,4 @@
+"use client";
 import { Trash2Icon } from "lucide-react";
 import {
 	AlertDialog,
@@ -10,8 +11,18 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { mutate } from "swr";
+import { deleteSnippetById } from "@/lib/actions/snippet.actions";
 
-export default function DeleteSnippetButton({ handleDeleteSnippet }) {
+export default function DeleteSnippetButton({ snippetId, folderId }) {
+	const handleDeleteSnippet = async () => {
+		try {
+			await deleteSnippetById(snippetId);
+			mutate(`snippets|${folderId}`);
+		} catch (error) {
+			console.log(`Failed to fetch data ${error.message}`);
+		}
+	};
 	return (
 		<AlertDialog>
 			<AlertDialogTrigger asChild>

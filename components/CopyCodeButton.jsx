@@ -14,10 +14,10 @@ export default function CopyCodeButton({ snippetCode }) {
 	return (
 		<div className="flex gap-3 items-center">
 			<CopyToClipboard onCopy={handleCopy} text={snippetCode}>
-				<CopyIcon className="text-[#4444FE] cursor-pointer" />
+				<CopyIcon className="text-accent cursor-pointer" />
 			</CopyToClipboard>
 
-			{copied && <span className="text-[#4444FE] text-md">Copied!</span>}
+			{copied && <span className="text-accent text-md">Copied!</span>}
 		</div>
 	);
 }

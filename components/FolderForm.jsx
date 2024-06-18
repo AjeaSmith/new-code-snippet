@@ -9,7 +9,7 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+
 import {
 	Form,
 	FormControl,
@@ -19,43 +19,40 @@ import {
 	FormMessage,
 } from "./ui/form";
 import { usePathname, useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useFormState } from "react-hook-form";
 import { createFolder, editFolderById } from "@/lib/actions/folder.actions";
-import { FolderPlusIcon } from "lucide-react";
+import { FolderPlusIcon, LoaderCircleIcon } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FolderValidation } from "@/lib/validations/folder";
+import { mutate } from "swr";
 
-export default function FolderForm({ open, onOpenChange, type }) {
+export default function FolderForm({ open, onOpenChange, folderName }) {
 	const pathname = usePathname();
 
 	const folderId = pathname.split("/")[2];
 	const router = useRouter();
 
 	const form = useForm({
+		resolver: zodResolver(FolderValidation),
 		defaultValues: {
-			name: "" ,
+			name: "",
 		},
 	});
 
-	const {
-		watch,
-		formState: { errors },
-	} = form;
-
-	// Watch the name field
-	const name = watch("name");
+	const { isSubmitting } = useFormState({ control: form.control });
 
 	const onSubmit = async (values) => {
-		if (type === "edit") {
-			await editFolderById(folderId, values.name, pathname);
-		} else if (type === "create") {
-			await createFolder(values.name, pathname);
+		if (folderName) {
+			await editFolderById(folderId, values.name);
 		} else {
-			return;
+			await createFolder(values.name);
 		}
-		router.push("/");
+		mutate(`snippets|${folderId}`);
+		router.push(`/folder/${folderId}`);
 	};
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			{type === "create" && (
+			{!folderName && (
 				<DialogTrigger className="mb-2 w-full py-2 | flex items-center justify-center gap-3 | bg-[#4444FE] rounded-md shadow-md | text-white">
 					<FolderPlusIcon />
 					New Folder
@@ -65,7 +62,7 @@ export default function FolderForm({ open, onOpenChange, type }) {
 			<DialogContent className="sm:max-w-[425px]">
 				<DialogHeader className="mb-2">
 					<DialogTitle>
-						{type === "edit" ? "Edit folder" : "Create folder"}
+						{folderName ? "Edit Name" : "Create Folder"}
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
@@ -73,31 +70,34 @@ export default function FolderForm({ open, onOpenChange, type }) {
 						<FormField
 							control={form.control}
 							name="name"
-							rules={{
-								validate: (value) =>
-									value.trim() !== "" || "Name cannot be empty or just spaces",
-							}}
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel>Name</FormLabel>
 									<FormControl>
-										<Input type="text" placeholder="React" {...field} />
+										<Input
+											type="text"
+											placeholder={folderName ? `${folderName}` : "e.g React"}
+											{...field}
+										/>
 									</FormControl>
-									<FormMessage>
-										{errors.name && errors.name.message}
-									</FormMessage>
+									<FormMessage />
 								</FormItem>
 							)}
 						/>
 						<DialogFooter className="mt-5">
-							<DialogClose>
-								<Button
-									className="bg-[#4444FE]"
-									type="submit"
-									disabled={!name.trim()}
-								>
-									Save
-								</Button>
+							<DialogClose
+								type="submit"
+								disabled={isSubmitting}
+								className="bg-accent hover:bg-accent/50 px-4 py-2 rounded-md text-white"
+							>
+								{isSubmitting ? (
+									<>
+										<LoaderCircleIcon className="animate-spin mr-2" />
+										{folderName ? "Saving..." : "Creating..."}
+									</>
+								) : (
+									<span>{folderName ? "Save Changes" : "Create"}</span>
+								)}
 							</DialogClose>
 						</DialogFooter>
 					</form>

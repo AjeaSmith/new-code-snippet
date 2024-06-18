@@ -11,8 +11,8 @@ export default function FolderItem({ folder }) {
 		pathname === folder._id;
 	return (
 		<li
-			className={`py-3 px-2 mt-2 | flex items-center justify-between gap-3 | rounded-md hover:bg-[#131415] cursor-pointer ${
-				isActive && "bg-[#131415]"
+			className={`py-3 px-2 mt-2 | flex items-center justify-between gap-3 | rounded-md hover:bg-snippet cursor-pointer ${
+				isActive && "bg-snippet"
 			}`}
 		>
 			<span className="flex items-center gap-x-3 px-3">
@@ -28,7 +28,9 @@ export default function FolderItem({ folder }) {
 					{truncateText(folder.name, 20)}
 				</Link>
 			</span>
-			{isActive ? <FolderActions folderId={folder._id} /> : null}
+			{isActive ? (
+				<FolderActions folderId={folder._id} folderName={folder.name} />
+			) : null}
 		</li>
 	);
 }
