@@ -16,13 +16,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+
 import { Input } from "@/components/ui/input";
 
 import { Button } from "./ui/button";
@@ -31,9 +25,21 @@ import CodeEditor from "./AceEditor";
 import { createSnippet, editSnippetById } from "@/lib/actions/snippet.actions";
 import { useRouter } from "next/navigation";
 import { mutate } from "swr";
-import { CircleEllipsisIcon, LoaderCircleIcon } from "lucide-react";
+import { LoaderCircleIcon } from "lucide-react";
+import {
+	DialogHeader,
+	DialogTitle,
+	DialogContent,
+	DialogFooter,
+} from "./ui/dialog";
 
-export default function SnippetForm({ snippet, folderId }) {
+export default function SnippetForm({
+	snippet,
+	folderId,
+	type,
+	open,
+	setOpen,
+}) {
 	const router = useRouter();
 
 	const form = useForm({
@@ -51,112 +57,136 @@ export default function SnippetForm({ snippet, folderId }) {
 	const language = form.watch("language");
 
 	const onSubmit = async (values) => {
-		if (snippet) {
-			await editSnippetById(snippet._id, folderId, values);
-			router.push(`/folder/${folderId}/snippet/${snippet._id}`);
-		} else {
-			await createSnippet({ ...values, folderId: folderId });
-			router.push(`/folder/${folderId}`);
-		}
+		if (type === "edit") {
+			const { updatedSnippetId } = await editSnippetById(snippet._id, values);
 
-		mutate(`snippets|${folderId}`);
+			mutate(
+				`snippets|${folderId}`,
+				(data) => {
+					return data.map((item) =>
+						item._id === snippet._id
+							? { ...values, _id: updatedSnippetId }
+							: item
+					);
+				},
+				false
+			);
+			// Prefetch the new route
+			router.refresh();
+		} else {
+			const { id } = await createSnippet(values, folderId);
+			// Optimistically update the UI
+			mutate(
+				`snippets|${folderId}`,
+				(data) => {
+					return [{ ...values, _id: id }, ...data];
+				},
+				false
+			);
+
+			form.reset();
+
+			// Prefetch the new route
+			router.prefetch(`/folder/${folderId}/snippet/${id}`);
+			router.push(`/folder/${folderId}/snippet/${id}`);
+		}
+		// Close the modal and reset the form
+		setOpen(false);
 	};
 
 	return (
-		<Card>
-			<CardHeader>
-				<CardTitle>
+		<DialogContent>
+			<DialogHeader>
+				<DialogTitle>
 					{snippet ? `Editing: ${snippet.name} ` : "Create a snippet"}
-				</CardTitle>
-			</CardHeader>
-			<CardContent>
-				<FormProvider {...form}>
-					<form
-						onSubmit={form.handleSubmit(onSubmit)}
-						className="flex flex-col gap-5"
-					>
-						{["name", "description"].map((field) => (
-							<FormField
-								key={field}
-								control={form.control}
-								name={field}
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>
-											{field.name.charAt(0).toUpperCase() + field.name.slice(1)}
-										</FormLabel>
-										<FormControl>
-											<Input type="text" {...field} />
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-						))}
+				</DialogTitle>
+			</DialogHeader>
+			<FormProvider {...form}>
+				<form
+					onSubmit={form.handleSubmit(onSubmit)}
+					className="flex flex-col gap-5"
+				>
+					{["name", "description"].map((field) => (
 						<FormField
+							key={field}
 							control={form.control}
-							name="language"
+							name={field}
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Select a language</FormLabel>
-									<Select
-										onValueChange={field.onChange}
-										defaultValue={field.value}
-									>
-										<FormControl>
-											<SelectTrigger>
-												<SelectValue placeholder="javascript" />
-											</SelectTrigger>
-										</FormControl>
-										<SelectContent>
-											{languages.map((lang) => (
-												<SelectItem key={lang} value={lang}>
-													{lang}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-
-						<FormField
-							control={form.control}
-							name="code"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Write or paste code</FormLabel>
+									<FormLabel>
+										{field.name.charAt(0).toUpperCase() + field.name.slice(1)}
+									</FormLabel>
 									<FormControl>
-										<CodeEditor
-											lang={language}
-											value={field.value}
-											onChange={field.onChange}
-										/>
+										<Input type="text" {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
 							)}
 						/>
-						<CardFooter className="flex justify-end">
-							<Button
-								type="submit"
-								disabled={isSubmitting}
-								className="bg-accent hover:bg-accent/50"
-							>
-								{isSubmitting ? (
-									<>
-										<LoaderCircleIcon className="animate-spin mr-2" />
-										{snippet ? "Saving..." : "Creating..."}
-									</>
-								) : (
-									<span>{snippet ? "Save Changes" : "Create"}</span>
-								)}
-							</Button>
-						</CardFooter>
-					</form>
-				</FormProvider>
-			</CardContent>
-		</Card>
+					))}
+					<FormField
+						control={form.control}
+						name="language"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Select a language</FormLabel>
+								<Select
+									onValueChange={field.onChange}
+									defaultValue={field.value}
+								>
+									<FormControl>
+										<SelectTrigger>
+											<SelectValue placeholder="javascript" />
+										</SelectTrigger>
+									</FormControl>
+									<SelectContent>
+										{languages.map((lang) => (
+											<SelectItem key={lang} value={lang}>
+												{lang}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="code"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Write or paste code</FormLabel>
+								<FormControl>
+									<CodeEditor
+										lang={language}
+										value={field.value}
+										onChange={field.onChange}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<DialogFooter className="flex justify-end">
+						<Button
+							type="submit"
+							disabled={isSubmitting}
+							className="bg-accent hover:bg-accent/50"
+						>
+							{isSubmitting ? (
+								<>
+									<LoaderCircleIcon className="animate-spin mr-2" />
+									{snippet ? "Saving..." : "Creating..."}
+								</>
+							) : (
+								<span>{snippet ? "Save Changes" : "Create"}</span>
+							)}
+						</Button>
+					</DialogFooter>
+				</form>
+			</FormProvider>
+		</DialogContent>
 	);
 }

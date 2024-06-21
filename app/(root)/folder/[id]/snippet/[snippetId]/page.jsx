@@ -1,10 +1,9 @@
-import Link from "next/link";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { fetchSnippetById } from "@/lib/actions/snippet.actions";
 import CopyCodeButton from "@/components/CopyCodeButton";
-import { EditIcon } from "lucide-react";
 import DeleteSnippetButton from "@/components/DeleteSnippetButton";
+import DialogSnippetForm from "@/components/DialogSnippetForm";
 
 export default async function SnippetViewPage({ params }) {
 	const { snippetId } = params;
@@ -16,15 +15,15 @@ export default async function SnippetViewPage({ params }) {
 			<div className="flex flex-col justify-between mb-2">
 				<div className="flex justify-between items-center">
 					<span className="flex items-center gap-3 mb-3">
-						<h2 className="text-2xl font-semibold">{snippet.name}</h2>
+						<h1 className="text-3xl font-semibold">{snippet.name}</h1>
 						<CopyCodeButton snippetCode={snippet.code} />
 					</span>
 					<div className="flex gap-3">
-						<Link
-							href={`/folder/${snippet.folderId}/snippet/${snippet._id}/edit`}
-						>
-							<EditIcon className="cursor-pointer text-accent" />
-						</Link>
+						<DialogSnippetForm
+							snippet={snippet}
+							folderId={snippet.folderId}
+							type="edit"
+						/>
 						<DeleteSnippetButton
 							snippetId={snippet._id}
 							folderId={snippet.folderId}

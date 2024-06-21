@@ -1,7 +1,7 @@
-import "./globals.css";
 import FolderList from "@/components/FolderList";
-import SnippetList from "@/components/SnippetList";
+import "./globals.css";
 import Head from "next/head";
+import SnippetList from "@/components/SnippetList";
 
 export const metadata = {
 	title: "CodeSnipHub: Your Ultimate Code Snippet Repository",

@@ -1,9 +1,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import DeleteSnippetButton from "./DeleteSnippetButton";
-import { deleteSnippetById } from "@/lib/actions/snippet.actions";
 import { truncateText } from "@/lib/utils";
-import { mutate } from "swr";
 
 export default function SnippetItem({ snippet, folderId }) {
 	const pathname = usePathname();
@@ -20,7 +17,6 @@ export default function SnippetItem({ snippet, folderId }) {
 					? "bg-active-snippet border-2 border-white"
 					: "border-2 border-transparent"
 			}`}
-			style={{ boxSizing: "border-box" }}
 		>
 			<div className={`flex flex-col ${isActive && "flex-1"}`}>
 				<span className="mb-2 text-lg font-semibold">{snippet.name}</span>
@@ -29,11 +25,9 @@ export default function SnippetItem({ snippet, folderId }) {
 						isActive ? "text-snippet-gray-active" : "text-snippet-gray"
 					}`}
 				>
-					{truncateText(snippet.code, 50)}
+					{truncateText(snippet.code, 30)}
 				</span>
 			</div>
-
-			{/* {isActive && <DeleteSnippetButton snippetId={snippet._id} />} */}
 		</Link>
 	);
 }

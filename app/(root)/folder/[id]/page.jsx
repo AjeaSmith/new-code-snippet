@@ -1,9 +1,9 @@
 import { PlusCircleIcon } from "lucide-react";
 
 export default function Page({ params }) {
-	const { folderId } = params;
+	const { id } = params;
 
-	return !folderId ? null : (
+	return !id ? null : (
 		<div className="p-6 text-white">
 			<h2 className="text-2xl font-semibold mb-2">Select or Create</h2>
 			<p>

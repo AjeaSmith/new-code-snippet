@@ -1,32 +1,35 @@
 "use client";
-import Link from "next/link";
+
 import useSWR from "swr";
 import { usePathname } from "next/navigation";
-import { PlusCircleIcon } from "lucide-react";
+import { LoaderCircleIcon } from "lucide-react";
 import SnippetItem from "./SnippetItem";
 
 import { fetchSnippetsByFolderId } from "@/lib/actions/snippet.actions";
 import { fetchFolderById } from "@/lib/actions/folder.actions";
 import { truncateText } from "@/lib/utils";
+import DialogSnippetForm from "./DialogSnippetForm";
 
 export default function SnippetList() {
 	const pathname = usePathname();
+	// TODO: Pass folderName through params to avoid fetch request for folder name
 	const folderId = pathname.split("/")[2];
 
-	const { data: folderData, error: folderError } = useSWR(
-		folderId ? `folder|${folderId}` : null,
+	const { data: folderData, error } = useSWR(
+		folderId !== "create" && folderId !== undefined
+			? `folder|${folderId}`
+			: null,
 		() => fetchFolderById(folderId)
 	);
-
 	const { data: snippetData, error: snippetError } = useSWR(
-		folderId ? `snippets|${folderId}` : null,
+		folderId !== "create" && folderId ? `snippets|${folderId}` : null,
 		() => fetchSnippetsByFolderId(folderId)
 	);
 
-	if (folderError)
+	if (error)
 		return (
 			<p className="mx-5 my-5 text-xl font-semibold">
-				Error loading folder: {folderError.message}
+				Error loading folder: {error.message}
 			</p>
 		);
 	if (snippetError)
@@ -38,33 +41,29 @@ export default function SnippetList() {
 
 	return (
 		<aside className="py-6 px-4 w-1/4 | bg-snippet border-r-2 border-black | text-white | overflow-y-auto">
-			{pathname === "/" || pathname === "/folder" ? null : !folderData || !snippetData ? (
-				<p>Loading...</p>
+			{!folderData || !snippetData ? (
+				<div className="flex flex-col justify-center items-center my-auto h-[60%]">
+					<LoaderCircleIcon className="animate-spin w-10 h-10" />
+				</div>
 			) : (
 				<>
 					<div className="mb-8 | flex items-center justify-between">
-						<h1 className="text-xl text-white/65 | font-semibold">
-							{truncateText(folderData.name, 20)} 
+						<h1 className="text-xl text-white | font-semibold">
+							{truncateText(folderData.name, 20)}
 							<span className="text-white/50 ml-2">({snippetData.length})</span>
 						</h1>
-						<div className="flex space-x-3">
-							<Link href={`/folder/${folderId}/snippet/create`}>
-								<PlusCircleIcon className="text-accent" />
-							</Link>
-						</div>
+						<DialogSnippetForm folderId={folderId} />
 					</div>
 					<nav>
-						{snippetData && (
-							<ul>
-								{snippetData.map((snippet) => (
-									<SnippetItem
-										key={snippet._id}
-										snippet={snippet}
-										folderId={folderId}
-									/>
-								))}
-							</ul>
-						)}
+						<ul>
+							{snippetData.map((snippet) => (
+								<SnippetItem
+									key={snippet._id}
+									snippet={snippet}
+									folderId={folderId}
+								/>
+							))}
+						</ul>
 					</nav>
 				</>
 			)}

@@ -13,12 +13,16 @@ import {
 } from "@/components/ui/alert-dialog";
 import { mutate } from "swr";
 import { deleteSnippetById } from "@/lib/actions/snippet.actions";
+import { useRouter } from "next/navigation";
 
 export default function DeleteSnippetButton({ snippetId, folderId }) {
+	const router = useRouter()
+	
 	const handleDeleteSnippet = async () => {
 		try {
 			await deleteSnippetById(snippetId);
 			mutate(`snippets|${folderId}`);
+			router.push(`/folder/${folderId}`);
 		} catch (error) {
 			console.log(`Failed to fetch data ${error.message}`);
 		}

@@ -10,9 +10,10 @@ export default function FolderItem({ folder }) {
 		(pathname.includes(folder._id) && folder._id.length > 1) ||
 		pathname === folder._id;
 	return (
-		<li
+		<Link
+			href={`/folder/${folder._id}`}
 			className={`py-3 px-2 mt-2 | flex items-center justify-between gap-3 | rounded-md hover:bg-snippet cursor-pointer ${
-				isActive && "bg-snippet"
+				isActive ? "bg-snippet text-white" : "text-[#78797c]"
 			}`}
 		>
 			<span className="flex items-center gap-x-3 px-3">
@@ -21,16 +22,12 @@ export default function FolderItem({ folder }) {
 						isActive ? "bg-green-400" : "bg-green-700"
 					}`}
 				/>
-				<Link
-					className={`${isActive ? "text-white" : "text-[#78797c]"}`}
-					href={`/folder/${folder._id}`}
-				>
-					{truncateText(folder.name, 20)}
-				</Link>
+
+				{truncateText(folder.name, 20)}
 			</span>
 			{isActive ? (
 				<FolderActions folderId={folder._id} folderName={folder.name} />
 			) : null}
-		</li>
+		</Link>
 	);
 }
