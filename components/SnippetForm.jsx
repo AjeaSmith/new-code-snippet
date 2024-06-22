@@ -34,13 +34,7 @@ import {
 } from "./ui/dialog";
 import { toast } from "react-toastify";
 
-export default function SnippetForm({
-	snippet,
-	folderId,
-	type,
-	open,
-	setOpen,
-}) {
+export default function SnippetForm({ snippet, folderId, type, setOpen }) {
 	const router = useRouter();
 
 	const form = useForm({
