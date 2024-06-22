@@ -1,12 +1,12 @@
 import Head from "next/head";
 import FolderList from "@/components/FolderList";
 import "./globals.css";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import SnippetList from "@/components/SnippetList";
 
 export const metadata = {
-	title: "CodeSnipHub: Your Ultimate Code Snippet Repository",
+	title: "CodeHub: Your Ultimate Code Snippet Repository",
 	description:
 		"Discover and share code snippets effortlessly with our Next.js-powered web app. Whether you're a developer looking for quick coding solutions, a student seeking learning resources, or a professional sharing best practices, our platform offers a seamless experience. Access a vast collection of snippets across various languages and frameworks, save your favorites, and contribute your own snippets to the community. Enjoy fast, intuitive, and organized code browsing with advanced search features and user-friendly interface",
 };
