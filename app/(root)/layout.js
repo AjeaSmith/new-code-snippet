@@ -1,6 +1,8 @@
+import Head from "next/head";
 import FolderList from "@/components/FolderList";
 import "./globals.css";
-import Head from "next/head";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import SnippetList from "@/components/SnippetList";
 
 export const metadata = {
@@ -21,6 +23,16 @@ export default function RootLayout({ children }) {
 				/>
 			</Head>
 			<body className={`h-screen flex`}>
+				<ToastContainer
+					position="top-right"
+					autoClose={3000}
+					hideProgressBar={false}
+					newestOnTop={false}
+					closeOnClick
+					rtl={false}
+					pauseOnFocusLoss
+					theme="light"
+				/>
 				<FolderList />
 				<SnippetList />
 				<main className="w-3/5 p-6 | bg-snippet | overflow-y-auto">

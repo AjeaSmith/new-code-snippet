@@ -32,6 +32,7 @@ import {
 	DialogContent,
 	DialogFooter,
 } from "./ui/dialog";
+import { toast } from "react-toastify";
 
 export default function SnippetForm({
 	snippet,
@@ -59,7 +60,6 @@ export default function SnippetForm({
 	const onSubmit = async (values) => {
 		if (type === "edit") {
 			const { updatedSnippetId } = await editSnippetById(snippet._id, values);
-
 			mutate(
 				`snippets|${folderId}`,
 				(data) => {
@@ -71,7 +71,8 @@ export default function SnippetForm({
 				},
 				false
 			);
-			// Prefetch the new route
+
+			toast.success("Updated successfully!");
 			router.refresh();
 		} else {
 			const { id } = await createSnippet(values, folderId);
@@ -89,6 +90,8 @@ export default function SnippetForm({
 			// Prefetch the new route
 			router.prefetch(`/folder/${folderId}/snippet/${id}`);
 			router.push(`/folder/${folderId}/snippet/${id}`);
+
+			toast.success("Created successfully!");
 		}
 		// Close the modal and reset the form
 		setOpen(false);

@@ -2,8 +2,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { fetchSnippetById } from "@/lib/actions/snippet.actions";
 import CopyCodeButton from "@/components/CopyCodeButton";
-import DeleteSnippetButton from "@/components/DeleteSnippetButton";
-import DialogSnippetForm from "@/components/DialogSnippetForm";
+import SnippetActions from "@/components/SnippetActions";
 
 export default async function SnippetViewPage({ params }) {
 	const { snippetId } = params;
@@ -18,17 +17,7 @@ export default async function SnippetViewPage({ params }) {
 						<h1 className="text-3xl font-semibold">{snippet.name}</h1>
 						<CopyCodeButton snippetCode={snippet.code} />
 					</span>
-					<div className="flex gap-3">
-						<DialogSnippetForm
-							snippet={snippet}
-							folderId={snippet.folderId}
-							type="edit"
-						/>
-						<DeleteSnippetButton
-							snippetId={snippet._id}
-							folderId={snippet.folderId}
-						/>
-					</div>
+					<SnippetActions snippet={snippet} />
 				</div>
 				<p className="text-white/75">{snippet.description}</p>
 			</div>
