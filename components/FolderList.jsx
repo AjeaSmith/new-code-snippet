@@ -4,6 +4,10 @@ import { FolderPlusIcon } from "lucide-react";
 import DialogFolderForm from "./DialogFolderForm";
 
 export default async function FolderList() {
+	/**
+	 * Fetches the list of folders from the API.
+	 * @returns {Promise<Array>} - A promise that resolves to an array of folder objects.
+	 */
 	const folders = await fetchFolders();
 
 	return (
@@ -16,9 +20,11 @@ export default async function FolderList() {
 			</DialogFolderForm>
 
 			<nav className="mt-5">
-				<ul>
+				<ul role="list" aria-label="Folder List">
 					{folders.map((folder) => {
-						return <FolderItem key={folder._id} folder={folder} />;
+						return (
+							<FolderItem key={folder._id} folder={folder} role="listitem" />
+						);
 					})}
 				</ul>
 			</nav>
