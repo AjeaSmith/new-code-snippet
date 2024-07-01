@@ -5,7 +5,7 @@ import SnippetForm from "./SnippetForm";
 import { Dialog, DialogTrigger } from "./ui/dialog";
 import { useState } from "react";
 
-export default function DialogSnippetForm({ snippet, folderId, type }) {
+export default function DialogSnippetForm({ type }) {
 	const [open, setOpen] = useState(false);
 
 	return (
@@ -17,13 +17,7 @@ export default function DialogSnippetForm({ snippet, folderId, type }) {
 					<PlusCircleIcon className="text-accent" />
 				)}
 			</DialogTrigger>
-			<SnippetForm
-				snippet={snippet}
-				folderId={folderId}
-				type={type}
-				open={open}
-				setOpen={setOpen}
-			/>
+			<SnippetForm type={type} open={open} setOpen={setOpen} />
 		</Dialog>
 	);
 }

@@ -23,32 +23,35 @@ import { LoaderCircleIcon } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FolderValidation } from "@/lib/validations/folder";
 import { mutate } from "swr";
+import { useFolders } from "@/app/context/FolderContext";
 
-export default function FolderForm({ folderId }) {
+export default function FolderForm({ type }) {
+	const { selectedFolder, addFolder } = useFolders();
 	const router = useRouter();
 
 	const form = useForm({
 		resolver: zodResolver(FolderValidation),
 		defaultValues: {
-			name: "",
+			name: type === "edit" ? selectedFolder.name : "",
 		},
 	});
 
 	const { isSubmitting } = useFormState({ control: form.control });
 
 	const onSubmit = async (values) => {
-		if (folderId) {
-			await editFolderById(folderId, values.name);
-		} else {
-			await createFolder(values.name);
+		try {
+			await addFolder(values, type);
+		} catch (error) {
+			console.log("Error handling folder actions", error);
 		}
-		mutate(`folder|${folderId}`);
-		router.refresh();
+		form.reset();
 	};
 	return (
 		<DialogContent className="sm:max-w-[425px]">
 			<DialogHeader className="mb-2">
-				<DialogTitle>{folderId ? "Edit Name" : "Create Folder"}</DialogTitle>
+				<DialogTitle>
+					{type === "edit" ? `Edit ${selectedFolder.name}` : "Create Folder"}
+				</DialogTitle>
 			</DialogHeader>
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)}>
@@ -74,10 +77,10 @@ export default function FolderForm({ folderId }) {
 							{isSubmitting ? (
 								<div className="flex">
 									<LoaderCircleIcon className="animate-spin mr-2" />
-									{folderId ? "Saving..." : "Creating..."}
+									{type === "edit" ? "Saving..." : "Creating..."}
 								</div>
 							) : (
-								<span>{folderId ? "Save Changes" : "Create"}</span>
+								<span>{type === "edit" ? "Save Changes" : "Create"}</span>
 							)}
 						</DialogClose>
 					</DialogFooter>

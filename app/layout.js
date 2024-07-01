@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
 					rel="stylesheet"
 				/>
 			</Head>
-			<body className={`h-screen flex`}>
+			<body className="h-screen">
 				<ToastContainer
 					position="top-right"
 					autoClose={3000}
@@ -33,11 +33,7 @@ export default function RootLayout({ children }) {
 					pauseOnFocusLoss
 					theme="light"
 				/>
-				<FolderList />
-				<SnippetList />
-				<main className="w-3/5 p-6 | bg-snippet | overflow-y-auto">
-					{children}
-				</main>
+				<main>{children}</main>
 			</body>
 		</html>
 	);

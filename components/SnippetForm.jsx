@@ -18,13 +18,9 @@ import {
 } from "@/components/ui/select";
 
 import { Input } from "@/components/ui/input";
-
 import { Button } from "./ui/button";
 import { languages } from "@/lib/constants";
 import CodeEditor from "./AceEditor";
-import { createSnippet, editSnippetById } from "@/lib/actions/snippet.actions";
-import { useRouter } from "next/navigation";
-import { mutate } from "swr";
 import { LoaderCircleIcon } from "lucide-react";
 import {
 	DialogHeader,
@@ -32,18 +28,19 @@ import {
 	DialogContent,
 	DialogFooter,
 } from "./ui/dialog";
-import { toast } from "react-toastify";
 
-export default function SnippetForm({ snippet, folderId, type, setOpen }) {
-	const router = useRouter();
+import { useSnippets } from "@/app/context/SnippetContext";
+
+export default function SnippetForm({ type, setOpen }) {
+	const { addSnippet, selectedSnippet } = useSnippets();
 
 	const form = useForm({
 		resolver: zodResolver(SnippetValidation),
 		defaultValues: {
-			name: snippet ? snippet.name : "",
-			description: snippet ? snippet.description : "",
-			code: snippet ? snippet.code : "",
-			language: snippet ? snippet.language : "javascript",
+			name: type === "edit" ? selectedSnippet.name : "",
+			description: type === "edit" ? selectedSnippet.description : "",
+			code: type === "edit" ? selectedSnippet.code : "",
+			language: type === "edit" ? selectedSnippet.language : "javascript",
 		},
 	});
 
@@ -52,42 +49,9 @@ export default function SnippetForm({ snippet, folderId, type, setOpen }) {
 	const language = form.watch("language");
 
 	const onSubmit = async (values) => {
-		if (type === "edit") {
-			const { updatedSnippetId } = await editSnippetById(snippet._id, values);
-			mutate(
-				`snippets|${folderId}`,
-				(data) => {
-					return data.map((item) =>
-						item._id === snippet._id
-							? { ...values, _id: updatedSnippetId }
-							: item
-					);
-				},
-				false
-			);
+		await addSnippet(values, type);
 
-			toast.success("Updated successfully!");
-			router.refresh();
-		} else {
-			const { id } = await createSnippet(values, folderId);
-			// Optimistically update the UI
-			mutate(
-				`snippets|${folderId}`,
-				(data) => {
-					return [{ ...values, _id: id }, ...data];
-				},
-				false
-			);
-
-			form.reset();
-
-			// Prefetch the new route
-			router.prefetch(`/folder/${folderId}/snippet/${id}`);
-			router.push(`/folder/${folderId}/snippet/${id}`);
-
-			toast.success("Created successfully!");
-		}
-		// Close the modal and reset the form
+		form.reset();
 		setOpen(false);
 	};
 
@@ -95,7 +59,9 @@ export default function SnippetForm({ snippet, folderId, type, setOpen }) {
 		<DialogContent>
 			<DialogHeader>
 				<DialogTitle>
-					{snippet ? `Editing: ${snippet.name} ` : "Create a snippet"}
+					{type === "edit"
+						? `Editing: ${selectedSnippet.name} `
+						: "Create a snippet"}
 				</DialogTitle>
 			</DialogHeader>
 			<FormProvider {...form}>
@@ -175,10 +141,10 @@ export default function SnippetForm({ snippet, folderId, type, setOpen }) {
 							{isSubmitting ? (
 								<>
 									<LoaderCircleIcon className="animate-spin mr-2" />
-									{snippet ? "Saving..." : "Creating..."}
+									{type === "edit" ? "Saving..." : "Creating..."}
 								</>
 							) : (
-								<span>{snippet ? "Save Changes" : "Create"}</span>
+								<span>{type === "edit" ? "Save Changes" : "Create"}</span>
 							)}
 						</Button>
 					</DialogFooter>

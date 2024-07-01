@@ -1,4 +1,7 @@
+"use client";
 import { Trash2Icon } from "lucide-react";
+import { useSnippets } from "@/app/context/SnippetContext";
+
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -10,30 +13,10 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { mutate } from "swr";
-import { deleteSnippetById } from "@/lib/actions/snippet.actions";
-import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
 
-export default function DeleteSnippetButton({ snippetId, folderId }) {
-	const router = useRouter();
+export default function DeleteSnippetButton() {
+	const { selectedSnippet, deleteSnippet } = useSnippets();
 
-	const handleDeleteSnippet = async () => {
-		try {
-			await deleteSnippetById(snippetId);
-			mutate(`snippets|${folderId}`);
-
-			toast.success("Deleted snippet successfully");
-
-			setTimeout(() => {
-				router.push(`/folder/${folderId}`);
-			}, 3000);
-			
-		} catch (error) {
-			toast.error("Oops, there was an error deleting this snippet");
-			console.log(`Failed to delete snippet ${error.message}`);
-		}
-	};
 	return (
 		<AlertDialog>
 			<AlertDialogTrigger asChild>
@@ -43,13 +26,13 @@ export default function DeleteSnippetButton({ snippetId, folderId }) {
 				<AlertDialogHeader>
 					<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
 					<AlertDialogDescription>
-						Deleting this snippet cannot be undone.
+						Deleting {selectedSnippet.name} cannot be undone.
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel>Cancel</AlertDialogCancel>
 					<AlertDialogAction
-						onClick={() => handleDeleteSnippet()}
+						onClick={() => deleteSnippet(selectedSnippet._id)}
 						className="bg-red-500 hover:bg-red-700"
 					>
 						Delete

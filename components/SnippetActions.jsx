@@ -1,20 +1,11 @@
-"use client";
-
 import DeleteSnippetButton from "./DeleteSnippetButton";
 import DialogSnippetForm from "./DialogSnippetForm";
 
-export default function SnippetActions({snippet}) {
+export default function SnippetActions() {
 	return (
 		<div className="flex gap-3">
-			<DialogSnippetForm
-				snippet={snippet}
-				folderId={snippet.folderId}
-				type="edit"
-			/>
-			<DeleteSnippetButton
-				snippetId={snippet._id}
-				folderId={snippet.folderId}
-			/>
+			<DialogSnippetForm type="edit" />
+			<DeleteSnippetButton />
 		</div>
 	);
 }

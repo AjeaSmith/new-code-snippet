@@ -1,47 +1,27 @@
 "use client";
 
-import useSWR from "swr";
-import { usePathname } from "next/navigation";
 import { LoaderCircleIcon } from "lucide-react";
-import SnippetItem from "./SnippetItem";
 
-import { fetchSnippetsByFolderId } from "@/lib/actions/snippet.actions";
-import { fetchFolderById } from "@/lib/actions/folder.actions";
 import { truncateText } from "@/lib/utils";
 import DialogSnippetForm from "./DialogSnippetForm";
+import { useFolders } from "@/app/context/FolderContext";
+import { useSnippets } from "@/app/context/SnippetContext";
 
 export default function SnippetList() {
-	const pathname = usePathname();
-	// TODO: Pass folderName through params to avoid fetch request for folder name
-	const folderId = pathname.split("/")[2];
-
-	const { data: folderData, error } = useSWR(
-		folderId !== "create" && folderId !== undefined
-			? `folder|${folderId}`
-			: null,
-		() => fetchFolderById(folderId)
-	);
-	const { data: snippetData, error: snippetError } = useSWR(
-		folderId !== "create" && folderId ? `snippets|${folderId}` : null,
-		() => fetchSnippetsByFolderId(folderId)
-	);
+	const { selectedFolder } = useFolders();
+	const { snippets, setSelectedSnippet, selectedSnippet, error } =
+		useSnippets();
 
 	if (error)
 		return (
-			<p className="mx-5 my-5 text-xl font-semibold">
-				Error loading folder: {error.message}
-			</p>
-		);
-	if (snippetError)
-		return (
-			<p className="mx-5 my-5 text-xl font-semibold">
-				Error loading snippets: {snippetError.message}
-			</p>
+			<h2 className="p-6 text-center text-xl font-semibold">
+				Sorry, there was a problem fetching snippets. Try again later
+			</h2>
 		);
 
 	return (
 		<aside className="py-6 px-4 w-1/4 | bg-snippet border-r-2 border-black | text-white | overflow-y-auto">
-			{!folderData || !snippetData ? (
+			{!selectedFolder || !snippets ? (
 				<div className="flex flex-col justify-center items-center my-auto h-[60%]">
 					<LoaderCircleIcon className="animate-spin w-10 h-10" />
 				</div>
@@ -49,19 +29,42 @@ export default function SnippetList() {
 				<>
 					<div className="mb-8 | flex items-center justify-between">
 						<h1 className="text-xl text-white | font-semibold">
-							{truncateText(folderData.name, 20)}
-							<span className="text-white/50 ml-2">({snippetData.length})</span>
+							{truncateText(selectedFolder.name, 20)}
+							<span className="text-white/50 ml-2">({snippets.length})</span>
 						</h1>
-						<DialogSnippetForm folderId={folderId} />
+						<DialogSnippetForm />
 					</div>
 					<nav>
 						<ul>
-							{snippetData.map((snippet) => (
-								<SnippetItem
+							{snippets.map((snippet) => (
+								<li
 									key={snippet._id}
-									snippet={snippet}
-									folderId={folderId}
-								/>
+									onClick={() => setSelectedSnippet(snippet)}
+									className={`p-4 mt-2 mb-3 flex items-center justify-between text-white/85 rounded-md cursor-pointer hover:bg-active-snippet hover:border-white/65 ${
+										selectedSnippet?._id === snippet._id
+											? "bg-active-snippet border-2 border-white"
+											: "border-2 border-transparent"
+									}`}
+								>
+									<div
+										className={`flex flex-col ${
+											selectedSnippet?._id === snippet._id && "flex-1"
+										}`}
+									>
+										<span className="mb-2 text-lg font-semibold">
+											{snippet.name}
+										</span>
+										<span
+											className={`code-text text-wrap ${
+												selectedSnippet?._id === snippet._id
+													? "text-snippet-gray-active"
+													: "text-snippet-gray"
+											}`}
+										>
+											{truncateText(snippet.code, 30)}
+										</span>
+									</div>
+								</li>
 							))}
 						</ul>
 					</nav>
