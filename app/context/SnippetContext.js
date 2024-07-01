@@ -24,15 +24,16 @@ export const SnippetProvider = ({ children }) => {
 		data: snippets,
 		isLoading,
 		error,
-	} = useSWR(`/api/snippets/${selectedFolder._id}`, fetcher);
+	} = useSWR(
+		selectedFolder ? `/api/snippets/${selectedFolder._id}` : null,
+		fetcher
+	);
 
 	useEffect(() => {
 		setSelectedSnippet(null); // Reset selected note when folder changes
 	}, [selectedFolder]);
 
-
 	const handleUpdateSnippet = async (snippetId, data) => {
-
 		try {
 			// Make the API call to update the snippet
 			const { updatedSnippet } = await editSnippetById(snippetId, data);

@@ -11,7 +11,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import FolderForm from "./FolderForm";
-import { deleteFolderById } from "@/lib/actions/folder.actions";
+
 import { useFolders } from "@/app/context/FolderContext";
 
 export default function DialogFolderActions() {
@@ -40,7 +40,6 @@ export default function DialogFolderActions() {
 						>
 							<Trash className="mr-2 h-4 w-4" />
 							Delete
-							<DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
 						</DropdownMenuItem>
 					</DropdownMenuGroup>
 				</DropdownMenuContent>

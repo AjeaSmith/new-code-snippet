@@ -16,23 +16,23 @@ import {
 	FormLabel,
 	FormMessage,
 } from "./ui/form";
-import { useRouter } from "next/navigation";
+
 import { useForm, useFormState } from "react-hook-form";
-import { createFolder, editFolderById } from "@/lib/actions/folder.actions";
+
 import { LoaderCircleIcon } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FolderValidation } from "@/lib/validations/folder";
-import { mutate } from "swr";
+
 import { useFolders } from "@/app/context/FolderContext";
 
 export default function FolderForm({ type }) {
 	const { selectedFolder, addFolder } = useFolders();
-	const router = useRouter();
 
 	const form = useForm({
 		resolver: zodResolver(FolderValidation),
 		defaultValues: {
 			name: type === "edit" ? selectedFolder.name : "",
+			color: type === "edit" ? selectedFolder.color : "#ffffff",
 		},
 	});
 
@@ -54,7 +54,7 @@ export default function FolderForm({ type }) {
 				</DialogTitle>
 			</DialogHeader>
 			<Form {...form}>
-				<form onSubmit={form.handleSubmit(onSubmit)}>
+				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
 					<FormField
 						control={form.control}
 						name="name"
@@ -63,6 +63,19 @@ export default function FolderForm({ type }) {
 								<FormLabel>Name</FormLabel>
 								<FormControl>
 									<Input type="text" placeholder="e.g React" {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="color"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Color</FormLabel>
+								<FormControl>
+									<Input type="color" {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>

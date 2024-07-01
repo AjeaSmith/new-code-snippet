@@ -24,42 +24,35 @@ export default function FolderList() {
 					New Folder
 				</span>
 			</DialogFolderForm>
+			{!folders ? null : (
+				<nav className="mt-5">
+					<ul role="list" aria-label="Folder List">
+						{folders.map((folder) => {
+							return (
+								<li
+									key={folder._id}
+									onClick={() => setSelectedFolder(folder)}
+									className={`py-3 px-2 mt-2 | flex items-center justify-between gap-3 | rounded-md hover:bg-snippet cursor-pointer ${
+										selectedFolder?._id === folder._id
+											? "bg-snippet text-white"
+											: "text-[#78797c]"
+									}`}
+								>
+									<span className="flex items-center gap-x-3 px-3">
+										<div
+											style={{ backgroundColor: `${folder.color}` }}
+											className="w-[8px] h-[8px] | rounded-full"
+										/>
 
-			<nav className="mt-5">
-				<ul role="list" aria-label="Folder List">
-					{folders.map((folder) => {
-						return (
-							<li
-								key={folder._id}
-								onClick={() => setSelectedFolder(folder)}
-								className={`py-3 px-2 mt-2 | flex items-center justify-between gap-3 | rounded-md hover:bg-snippet cursor-pointer ${
-									selectedFolder._id === folder._id
-										? "bg-snippet text-white"
-										: "text-[#78797c]"
-								}`}
-							>
-								<span className="flex items-center gap-x-3 px-3">
-									<div
-										className={`w-[8px] h-[8px] | rounded-full ${
-											selectedFolder._id === folder._id
-												? "bg-green-400"
-												: "bg-green-700"
-										}`}
-									/>
-
-									{truncateText(folder.name, 20)}
-								</span>
-								{selectedFolder._id === folder._id ? (
-									<FolderActions
-										folderId={folder._id}
-										folderName={folder.name}
-									/>
-								) : null}
-							</li>
-						);
-					})}
-				</ul>
-			</nav>
+										{truncateText(folder.name, 20)}
+									</span>
+									{selectedFolder?._id === folder._id ? <FolderActions /> : null}
+								</li>
+							);
+						})}
+					</ul>
+				</nav>
+			)}
 		</aside>
 	);
 }

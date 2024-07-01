@@ -19,57 +19,59 @@ export const FolderProvider = ({ children, initialFolders }) => {
 
 	const { data: folders, error } = useSWR(`/api/folders`, fetcher, {
 		fallbackData: initialFolders,
-		revalidateOnReconnect: true,
 	});
 
 	// optimistic UI to update the UI locally before network call.
-	const updateFolderOptimistically = (folderId, newName) => {
+	const updateFolderOptimistically = (data) => {
 		const optimisticFolders = folders.map((folder) =>
-			folder._id === folderId ? { ...folder, name: newName } : folder
+			folder._id === selectedFolder._id
+				? { ...folder, name: data.name, color: data.color }
+				: folder
 		);
 
-		mutate("folders", optimisticFolders, false);
+		mutate("/api/folders", optimisticFolders, false);
 		setSelectedFolder((prev) =>
-			prev && prev._id === folderId ? { ...prev, name: newName } : prev
+			prev && prev._id === selectedFolder._id
+				? { ...prev, name: data.name, color: data.color }
+				: prev
 		);
 	};
 
-	const handleUpdateFolder = async (folderId, newName) => {
+	const handleUpdateFolder = async (data) => {
 		// Perform optimistic update
-		updateFolderOptimistically(folderId, newName);
+		updateFolderOptimistically(selectedFolder._id, data);
 
 		try {
 			// Make the API call to update the folder
-			await editFolderById(folderId, newName);
-			// Revalidate the folders list after a successful update
-			mutate("folders");
+			await editFolderById(selectedFolder._id, data);
 		} catch (error) {
 			console.error("Failed to update folder", error);
 			// Revert the optimistic update in case of an error
-			mutate("folders");
+			mutate("/api/folders");
 		}
 	};
 
 	const addFolder = async (folderData, type) => {
 		if (type === "edit") {
-			await handleUpdateFolder(selectedFolder._id, folderData.name);
+			await handleUpdateFolder(folderData);
 		} else {
-			const { folder } = await createFolder(folderData.name);
-			mutate("folders");
+			const { folder } = await createFolder(folderData);
 			setSelectedFolder(folder);
 		}
+		mutate("/api/folders");
 	};
 
 	const deleteFolder = async (folderId) => {
 		//TODO: delete folder by ID
 		try {
 			await deleteFolderById(folderId);
-			mutate("folders"); // Revalidate SWR cache
+			mutate("/api/folders"); // Revalidate SWR cache
 
 			setSelectedFolder(initialFolders[0]);
 		} catch (error) {
 			console.log("Error deleting folder", error);
 		}
+		mutate(`/api/snippets/${selectedFolder._id}`);
 	};
 
 	return (

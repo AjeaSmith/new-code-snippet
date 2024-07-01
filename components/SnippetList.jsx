@@ -9,7 +9,7 @@ import { useSnippets } from "@/app/context/SnippetContext";
 
 export default function SnippetList() {
 	const { selectedFolder } = useFolders();
-	const { snippets, setSelectedSnippet, selectedSnippet, error } =
+	const { snippets, setSelectedSnippet, selectedSnippet, error, isLoading } =
 		useSnippets();
 
 	if (error)
@@ -21,11 +21,12 @@ export default function SnippetList() {
 
 	return (
 		<aside className="py-6 px-4 w-1/4 | bg-snippet border-r-2 border-black | text-white | overflow-y-auto">
-			{!selectedFolder || !snippets ? (
+			{isLoading && (
 				<div className="flex flex-col justify-center items-center my-auto h-[60%]">
 					<LoaderCircleIcon className="animate-spin w-10 h-10" />
 				</div>
-			) : (
+			)}
+			{!selectedFolder || !snippets ? null : (
 				<>
 					<div className="mb-8 | flex items-center justify-between">
 						<h1 className="text-xl text-white | font-semibold">
