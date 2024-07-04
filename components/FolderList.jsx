@@ -8,6 +8,7 @@ import FolderActions from "./FolderActions";
 
 export default function FolderList() {
 	const { folders, selectedFolder, setSelectedFolder, error } = useFolders();
+	console.log(folders);
 
 	if (error)
 		return (
@@ -46,7 +47,9 @@ export default function FolderList() {
 
 										{truncateText(folder.name, 20)}
 									</span>
-									{selectedFolder?._id === folder._id ? <FolderActions /> : null}
+									{selectedFolder?._id === folder._id ? (
+										<FolderActions />
+									) : null}
 								</li>
 							);
 						})}
