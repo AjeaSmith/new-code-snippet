@@ -6,6 +6,7 @@ import {
 	editFolderById,
 } from "@/lib/actions/folder.actions";
 import { createContext, useContext, useState } from "react";
+import { toast } from "react-toastify";
 import useSWR, { mutate } from "swr";
 
 const FolderContext = createContext();
@@ -64,10 +65,12 @@ export const FolderProvider = ({ children, initialFolders }) => {
 	const deleteFolder = async (folderId) => {
 		//TODO: delete folder by ID
 		try {
-			await deleteFolderById(folderId);
+			const { folder } = await deleteFolderById(folderId);
 			mutate("/api/folders"); // Revalidate SWR cache
 
 			setSelectedFolder(initialFolders[0]);
+
+			toast.success(`${folder.name} deleted successfully`);
 		} catch (error) {
 			console.log("Error deleting folder", error);
 		}
