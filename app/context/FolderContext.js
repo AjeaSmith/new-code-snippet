@@ -48,7 +48,7 @@ export const FolderProvider = ({ children, initialFolders }) => {
 
 	const handleUpdateFolder = async (data) => {
 		// Perform optimistic update
-		updateFolderOptimistically(selectedFolder._id, data);
+		updateFolderOptimistically(data);
 
 		try {
 			// Make the API call to update the folder
