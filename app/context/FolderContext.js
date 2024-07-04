@@ -48,13 +48,9 @@ export const FolderProvider = ({ children, initialFolders }) => {
 
 		try {
 			// Make the API call to update the folder
-			await editFolderById(selectedFolder._id, data);
+			const { updatedFolder } = await editFolderById(selectedFolder._id, data);
 
-			await mutate(
-				`${API_BASE_URL}/api/folders`,
-				fetcher(`${API_BASE_URL}/api/folders`),
-				true
-			);
+			mutate(`${API_BASE_URL}/api/folders`, updatedFolder, false);
 		} catch (error) {
 			console.error("Failed to update folder", error);
 			// Revert the optimistic update in case of an error
