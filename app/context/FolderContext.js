@@ -7,7 +7,7 @@ import {
 } from "@/lib/actions/folder.actions";
 import { createContext, useContext, useState } from "react";
 import { toast } from "react-toastify";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 
 const FolderContext = createContext();
 
@@ -19,10 +19,11 @@ export const FolderProvider = ({ children, initialFolders }) => {
 		initialFolders ? initialFolders[0] : null
 	);
 
-	const { data: folders, error } = useSWR(
-		`${API_BASE_URL}/api/folders`,
-		fetcher
-	);
+	const {
+		data: folders,
+		error,
+		mutate,
+	} = useSWR(`${API_BASE_URL}/api/folders`, fetcher);
 
 	console.log("from context", folders);
 
@@ -61,7 +62,7 @@ export const FolderProvider = ({ children, initialFolders }) => {
 	const addFolder = async (folderData, type) => {
 		if (type === "edit") {
 			await handleUpdateFolder(folderData);
-			await mutate(`${API_BASE_URL}/api/folders`, false);
+			mutate(`${API_BASE_URL}/api/folders`, false);
 		} else {
 			const { folder } = await createFolder(folderData);
 			setSelectedFolder(folder);
