@@ -52,7 +52,8 @@ export const FolderProvider = ({ children, initialFolders }) => {
 		try {
 			// Make the API call to update the folder
 			await editFolderById(selectedFolder._id, data);
-			mutate(`${API_BASE_URL}/api/folders`, false);
+
+			await mutate(`${API_BASE_URL}/api/folders`, false);
 		} catch (error) {
 			console.error("Failed to update folder", error);
 			// Revert the optimistic update in case of an error
@@ -63,11 +64,11 @@ export const FolderProvider = ({ children, initialFolders }) => {
 	const addFolder = async (folderData, type) => {
 		if (type === "edit") {
 			await handleUpdateFolder(folderData);
-			mutate(`${API_BASE_URL}/api/folders`, false);
+			await mutate(`${API_BASE_URL}/api/folders`, false);
 		} else {
 			const { folder } = await createFolder(folderData);
 			setSelectedFolder(folder);
-			mutate(`${API_BASE_URL}/api/folders`, false);
+			await mutate(`${API_BASE_URL}/api/folders`, false);
 		}
 	};
 
@@ -75,7 +76,7 @@ export const FolderProvider = ({ children, initialFolders }) => {
 		//TODO: delete folder by ID
 		try {
 			const { folder } = await deleteFolderById(folderId);
-			mutate(`${API_BASE_URL}/api/folders`); // Revalidate SWR cache
+			await mutate(`${API_BASE_URL}/api/folders`); // Revalidate SWR cache
 
 			setSelectedFolder(initialFolders[0]);
 
@@ -83,7 +84,7 @@ export const FolderProvider = ({ children, initialFolders }) => {
 		} catch (error) {
 			console.log("Error deleting folder", error);
 		}
-		mutate(`/api/snippets/${selectedFolder._id}`);
+		await mutate(`/api/snippets/${selectedFolder._id}`);
 	};
 
 	return (
