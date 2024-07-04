@@ -8,7 +8,6 @@ import FolderActions from "./FolderActions";
 
 export default function FolderList() {
 	const { folders, selectedFolder, setSelectedFolder, error } = useFolders();
-	console.log(folders);
 
 	if (error)
 		return (

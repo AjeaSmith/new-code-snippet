@@ -27,6 +27,8 @@ export const FolderProvider = ({ children, initialFolders }) => {
 		}
 	);
 
+	console.log("from context", folders);
+
 	// optimistic UI to update the UI locally before network call.
 	const updateFolderOptimistically = (data) => {
 		const optimisticFolders = folders.map((folder) =>
