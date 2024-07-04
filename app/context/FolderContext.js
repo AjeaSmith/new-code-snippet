@@ -18,9 +18,7 @@ export const FolderProvider = ({ children, initialFolders }) => {
 		initialFolders ? initialFolders[0] : null
 	);
 
-	const { data: folders, error } = useSWR(`/api/folders`, fetcher, {
-		fallbackData: initialFolders,
-	});
+	const { data: folders, error } = useSWR(`/api/folders`, fetcher);
 
 	// optimistic UI to update the UI locally before network call.
 	const updateFolderOptimistically = (data) => {
