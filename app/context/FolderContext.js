@@ -31,7 +31,6 @@ export const FolderProvider = ({ children, initialFolders }) => {
 
 	// optimistic UI to update the UI locally before network call.
 	const updateFolderOptimistically = (data) => {
-		console.log("optimistic data passed", data);
 		const optimisticFolders = folders.map((folder) =>
 			folder._id === selectedFolder._id
 				? { ...folder, name: data.name, color: data.color }
@@ -53,6 +52,7 @@ export const FolderProvider = ({ children, initialFolders }) => {
 		try {
 			// Make the API call to update the folder
 			await editFolderById(selectedFolder._id, data);
+			mutate(`${API_BASE_URL}/api/folders`);
 		} catch (error) {
 			console.error("Failed to update folder", error);
 			// Revert the optimistic update in case of an error
