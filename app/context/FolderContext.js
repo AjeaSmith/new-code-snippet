@@ -21,10 +21,7 @@ export const FolderProvider = ({ children, initialFolders }) => {
 
 	const { data: folders, error } = useSWR(
 		`${API_BASE_URL}/api/folders`,
-		fetcher,
-		{
-			fallbackData: initialFolders,
-		}
+		fetcher
 	);
 
 	console.log("from context", folders);
