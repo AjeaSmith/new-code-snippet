@@ -59,6 +59,7 @@ export const FolderProvider = ({ children, initialFolders }) => {
 
 	const addFolder = async (folderData, type) => {
 		if (type === "edit") {
+			console.log("folderData passed", folderData);
 			await handleUpdateFolder(folderData);
 		} else {
 			const { folder } = await createFolder(folderData);
