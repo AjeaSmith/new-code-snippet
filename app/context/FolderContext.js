@@ -11,6 +11,7 @@ import useSWR, { mutate } from "swr";
 
 const FolderContext = createContext();
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const fetcher = (url) => fetch(url).then((r) => r.json());
 
 export const FolderProvider = ({ children, initialFolders }) => {
@@ -18,7 +19,13 @@ export const FolderProvider = ({ children, initialFolders }) => {
 		initialFolders ? initialFolders[0] : null
 	);
 
-	const { data: folders, error } = useSWR(`/api/folders`, fetcher);
+	const { data: folders, error } = useSWR(
+		`${API_BASE_URL}/api/folders`,
+		fetcher,
+		{
+			fallbackData: initialFolders,
+		}
+	);
 
 	// optimistic UI to update the UI locally before network call.
 	const updateFolderOptimistically = (data) => {
@@ -56,8 +63,8 @@ export const FolderProvider = ({ children, initialFolders }) => {
 		} else {
 			const { folder } = await createFolder(folderData);
 			setSelectedFolder(folder);
+			mutate("/api/folders");
 		}
-		mutate("/api/folders");
 	};
 
 	const deleteFolder = async (folderId) => {

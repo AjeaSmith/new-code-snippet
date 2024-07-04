@@ -13,6 +13,7 @@ import { truncateText } from "@/lib/utils";
 
 const SnippetContext = createContext();
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 export const SnippetProvider = ({ children }) => {
