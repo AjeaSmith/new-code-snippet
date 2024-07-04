@@ -44,6 +44,7 @@ export const FolderProvider = ({ children, initialFolders }) => {
 	};
 
 	const handleUpdateFolder = async (data) => {
+		console.log("data from handleUpdate", data);
 		// Perform optimistic update
 		updateFolderOptimistically(selectedFolder._id, data);
 
@@ -59,7 +60,6 @@ export const FolderProvider = ({ children, initialFolders }) => {
 
 	const addFolder = async (folderData, type) => {
 		if (type === "edit") {
-			console.log("folderData passed", folderData);
 			await handleUpdateFolder(folderData);
 			mutate(`${API_BASE_URL}/api/folders`);
 		} else {
