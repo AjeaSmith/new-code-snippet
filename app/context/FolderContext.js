@@ -35,7 +35,7 @@ export const FolderProvider = ({ children, initialFolders }) => {
 				: folder
 		);
 
-		mutate("/api/folders", optimisticFolders, false);
+		mutate(`${API_BASE_URL}/api/folders`, optimisticFolders, false);
 		setSelectedFolder((prev) =>
 			prev && prev._id === selectedFolder._id
 				? { ...prev, name: data.name, color: data.color }
@@ -53,7 +53,7 @@ export const FolderProvider = ({ children, initialFolders }) => {
 		} catch (error) {
 			console.error("Failed to update folder", error);
 			// Revert the optimistic update in case of an error
-			mutate("/api/folders");
+			mutate(`${API_BASE_URL}/api/folders`);
 		}
 	};
 
@@ -63,7 +63,7 @@ export const FolderProvider = ({ children, initialFolders }) => {
 		} else {
 			const { folder } = await createFolder(folderData);
 			setSelectedFolder(folder);
-			mutate("/api/folders");
+			mutate(`${API_BASE_URL}/api/folders`);
 		}
 	};
 
@@ -71,7 +71,7 @@ export const FolderProvider = ({ children, initialFolders }) => {
 		//TODO: delete folder by ID
 		try {
 			const { folder } = await deleteFolderById(folderId);
-			mutate("/api/folders"); // Revalidate SWR cache
+			mutate(`${API_BASE_URL}/api/folders`); // Revalidate SWR cache
 
 			setSelectedFolder(initialFolders[0]);
 
