@@ -4,12 +4,20 @@ import { connectToDB } from "@/lib/mongoose";
 export async function GET() {
 	try {
 		await connectToDB();
-		const folders = await Folder.find({})
-			.sort({ createdAt: "desc" })
-			.lean();
+		const folders = await Folder.find({}).sort({ createdAt: "desc" }).lean();
 
-		return Response.json(folders);
+		return new Response(JSON.stringify(folders), {
+			status: 200,
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
 	} catch (error) {
-		return Response.json({ error: "Failed to fetch folders" });
+		return new Response(JSON.stringify({ error: "Failed to fetch folders" }), {
+			status: 500,
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
 	}
 }
