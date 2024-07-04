@@ -52,7 +52,7 @@ export const FolderProvider = ({ children, initialFolders }) => {
 		try {
 			// Make the API call to update the folder
 			await editFolderById(selectedFolder._id, data);
-			mutate(`${API_BASE_URL}/api/folders`);
+			mutate(`${API_BASE_URL}/api/folders`, false);
 		} catch (error) {
 			console.error("Failed to update folder", error);
 			// Revert the optimistic update in case of an error
@@ -63,11 +63,11 @@ export const FolderProvider = ({ children, initialFolders }) => {
 	const addFolder = async (folderData, type) => {
 		if (type === "edit") {
 			await handleUpdateFolder(folderData);
-			mutate(`${API_BASE_URL}/api/folders`);
+			mutate(`${API_BASE_URL}/api/folders`, false);
 		} else {
 			const { folder } = await createFolder(folderData);
 			setSelectedFolder(folder);
-			mutate(`${API_BASE_URL}/api/folders`);
+			mutate(`${API_BASE_URL}/api/folders`, false);
 		}
 	};
 
