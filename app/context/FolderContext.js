@@ -44,13 +44,13 @@ export const FolderProvider = ({ children, initialFolders }) => {
 
 	const handleUpdateFolder = async (data) => {
 		// Perform optimistic update
-		updateFolderOptimistically(data);
+		// updateFolderOptimistically(data);
 
 		try {
 			// Make the API call to update the folder
 			const { updatedFolder } = await editFolderById(selectedFolder._id, data);
 
-			mutate(`${API_BASE_URL}/api/folders`, updatedFolder, false);
+			mutate(`${API_BASE_URL}/api/folders`, false);
 		} catch (error) {
 			console.error("Failed to update folder", error);
 			// Revert the optimistic update in case of an error
