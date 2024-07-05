@@ -52,6 +52,7 @@ export const FolderProvider = ({ children }) => {
 				);
 			});
 			setSelectedFolder(updatedFolder);
+			queryClient.invalidateQueries({ queryKey: ["folders"] });
 		},
 	});
 
