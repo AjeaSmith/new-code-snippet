@@ -6,7 +6,10 @@ import SnippetContent from "./SnippetContent";
 import Folder from "@/lib/models/folder.model";
 import { connectToDB } from "@/lib/mongoose";
 import { handleError } from "@/lib/utils";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+// Create a client
+const queryClient = new QueryClient();
 const fetchFolders = async () => {
 	try {
 		await connectToDB();
@@ -21,14 +24,16 @@ export default async function HomeContent() {
 	const folders = await fetchFolders();
 
 	return (
-		<FolderProvider initialFolders={folders}>
-			<SnippetProvider>
-				<section className="flex h-screen">
-					<FolderList />
-					<SnippetList />
-					<SnippetContent />
-				</section>
-			</SnippetProvider>
-		</FolderProvider>
+		<QueryClientProvider client={queryClient}>
+			<FolderProvider initialFolders={folders}>
+				<SnippetProvider>
+					<section className="flex h-screen">
+						<FolderList />
+						<SnippetList />
+						<SnippetContent />
+					</section>
+				</SnippetProvider>
+			</FolderProvider>
+		</QueryClientProvider>
 	);
 }

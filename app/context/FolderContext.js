@@ -5,9 +5,15 @@ import {
 	deleteFolderById,
 	editFolderById,
 } from "@/lib/actions/folder.actions";
-import { createContext, useContext, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import {
+	createContext,
+	useCallback,
+	useContext,
+	useEffect,
+	useState,
+} from "react";
 import { toast } from "react-toastify";
-import useSWR from "swr";
 
 const FolderContext = createContext();
 
@@ -19,33 +25,40 @@ export const FolderProvider = ({ children, initialFolders }) => {
 		initialFolders ? initialFolders[0] : null
 	);
 
-	const {
-		data: folders,
-		error,
-		mutate,
-	} = useSWR(`${API_BASE_URL}/api/folders`, fetcher, {
-		revalidateIfStale: true,
-		revalidateOnFocus: false,
-		revalidateOnReconnect: false,
+	const { isPending, error, data } = useQuery({
+		queryKey: ["folders"],
+		queryFn: () =>
+			fetch(`${API_BASE_URL}/api/folders`).then((res) => res.json()),
 	});
+	console.log(isPending);
+	console.log(data);
+	// const {
+	// 	data: folders,
+	// 	error,
+	// 	mutate,
+	// } = useSWR(`${API_BASE_URL}/api/folders`, fetcher, {
+	// 	revalidateIfStale: true,
+	// 	revalidateOnFocus: false,
+	// 	revalidateOnReconnect: false,
+	// });
 
-	console.log("from context", folders);
+	// console.log("from context", folders);
 
-	// optimistic UI to update the UI locally before network call.
-	const updateFolderOptimistically = (data) => {
-		const optimisticFolders = folders.map((folder) =>
-			folder._id === selectedFolder._id
-				? { ...folder, name: data.name, color: data.color }
-				: folder
-		);
+	// // optimistic UI to update the UI locally before network call.
+	// const updateFolderOptimistically = (data) => {
+	// 	const optimisticFolders = folders.map((folder) =>
+	// 		folder._id === selectedFolder._id
+	// 			? { ...folder, name: data.name, color: data.color }
+	// 			: folder
+	// 	);
 
-		mutate(`${API_BASE_URL}/api/folders`, optimisticFolders, false);
-		setSelectedFolder((prev) =>
-			prev && prev._id === selectedFolder._id
-				? { ...prev, name: data.name, color: data.color }
-				: prev
-		);
-	};
+	// 	mutate(`${API_BASE_URL}/api/folders`, optimisticFolders, false);
+	// 	setSelectedFolder((prev) =>
+	// 		prev && prev._id === selectedFolder._id
+	// 			? { ...prev, name: data.name, color: data.color }
+	// 			: prev
+	// 	);
+	// };
 
 	// const handleUpdateFolder = async (data) => {
 	// 	// Perform optimistic update
