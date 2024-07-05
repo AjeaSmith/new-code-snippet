@@ -4,6 +4,7 @@ import { FolderPlusIcon } from "lucide-react";
 import DialogFolderForm from "./DialogFolderForm";
 import { useFolders } from "@/app/context/FolderContext";
 import FolderItem from "./FolderItem";
+import SkeletonUI from "./SkeletonUI";
 
 export default function FolderList() {
 	const { folders, error, isLoading } = useFolders();
@@ -23,7 +24,7 @@ export default function FolderList() {
 					New Folder
 				</span>
 			</DialogFolderForm>
-			{isLoading && <div>Loading...</div>}
+			{isLoading && <SkeletonUI />}
 			{folders && (
 				<nav className="mt-5">
 					<ul role="list" aria-label="Folder List">
