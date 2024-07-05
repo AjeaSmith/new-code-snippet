@@ -26,7 +26,6 @@ export const FolderProvider = ({ children }) => {
 			fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/folders`).then((res) =>
 				res.json()
 			),
-		staleTime: 0,
 	});
 
 	const { mutate: editMutate, isPending: editPending } = useMutation({
