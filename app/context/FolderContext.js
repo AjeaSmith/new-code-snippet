@@ -45,7 +45,7 @@ export const FolderProvider = ({ children }) => {
 				);
 			});
 			setSelectedFolder(updatedFolder)
-			queryClient.invalidateQueries(["folders"]);
+			// queryClient.invalidateQueries(["folders"]);
 		},
 	});
 	const addFolder = async (folderData, type) => {
