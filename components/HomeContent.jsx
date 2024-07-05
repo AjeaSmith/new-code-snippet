@@ -10,19 +10,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Create a client
 const queryClient = new QueryClient();
-// const fetchFolders = async () => {
-// 	try {
-// 		await connectToDB();
-// 		const folders = await Folder.find({}).sort({ createdAt: "desc" }).lean();
 
-// 		return folders;
-// 	} catch (error) {
-// 		handleError(error, "Failed to fetch folders");
-// 	}
-// };
 export default function HomeContent() {
-	// const folders = await fetchFolders();
-
 	return (
 		<QueryClientProvider client={queryClient}>
 			<FolderProvider>

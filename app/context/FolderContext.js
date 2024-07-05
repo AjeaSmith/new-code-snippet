@@ -6,19 +6,14 @@ import {
 	editFolderById,
 } from "@/lib/actions/folder.actions";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-	createContext,
-	useCallback,
-	useContext,
-	useEffect,
-	useState,
-} from "react";
+import { createContext, useContext, useState } from "react";
 import { toast } from "react-toastify";
 
 const FolderContext = createContext();
 
 export const FolderProvider = ({ children }) => {
 	const queryClient = useQueryClient();
+
 	const [selectedFolder, setSelectedFolder] = useState(null);
 
 	const {
@@ -31,7 +26,9 @@ export const FolderProvider = ({ children }) => {
 			fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/folders`).then((res) =>
 				res.json()
 			),
+		staleTime: 0,
 	});
+
 	const {
 		mutate: editMutate,
 		isPending: editPending,
@@ -40,6 +37,7 @@ export const FolderProvider = ({ children }) => {
 		mutationFn: async (data) => {
 			const { updatedFolder } = await editFolderById(selectedFolder._id, data);
 			setSelectedFolder(updatedFolder);
+			return updatedFolder;
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["folders"] });
