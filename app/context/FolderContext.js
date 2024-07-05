@@ -17,7 +17,7 @@ export const FolderProvider = ({ children }) => {
 	const [selectedFolder, setSelectedFolder] = useState(null);
 
 	const {
-		isPending,
+		isLoading,
 		error,
 		data: folders,
 	} = useQuery({
@@ -41,9 +41,6 @@ export const FolderProvider = ({ children }) => {
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["folders"] });
-		},
-		onSettled: async () => {
-			return await queryClient.invalidateQueries({ queryKey: ["folders"] });
 		},
 	});
 
@@ -74,6 +71,7 @@ export const FolderProvider = ({ children }) => {
 	return (
 		<FolderContext.Provider
 			value={{
+				isLoading,
 				variables,
 				editPending,
 				folders,
