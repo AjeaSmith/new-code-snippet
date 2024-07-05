@@ -33,7 +33,6 @@ export const FolderProvider = ({ children }) => {
 		mutationFn: async (data) => {
 			const { updatedFolder } = await editFolderById(selectedFolder._id, data);
 			setSelectedFolder(updatedFolder);
-			return updatedFolder;
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["folders"] });
