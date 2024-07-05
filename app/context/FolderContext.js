@@ -13,7 +13,6 @@ const FolderContext = createContext();
 
 export const FolderProvider = ({ children }) => {
 	const queryClient = useQueryClient();
-
 	const [selectedFolder, setSelectedFolder] = useState(null);
 
 	const {
@@ -36,19 +35,14 @@ export const FolderProvider = ({ children }) => {
 		cacheTime: 0,
 	});
 
-	const { mutate: editMutate, isPending: editPending } = useMutation({
+	const { mutate: editMutate, isLoading: editLoading } = useMutation({
 		mutationFn: async (data) => {
-			const response = await editFolderById(selectedFolder._id, data);
-			if (!response.ok) {
-				const errorText = await response.text();
-				throw new Error(`Error ${response.status}: ${errorText}`);
-			}
-			const updatedFolder = await response.json();
-			setSelectedFolder(updatedFolder);
+			const updatedFolder = await editFolderById(selectedFolder._id, data);
 			return updatedFolder;
 		},
-		onSuccess: () => {
+		onSuccess: (updatedFolder) => {
 			queryClient.invalidateQueries({ queryKey: ["folders"] });
+			setSelectedFolder(updatedFolder);
 		},
 	});
 
@@ -56,38 +50,23 @@ export const FolderProvider = ({ children }) => {
 		if (type === "edit") {
 			editMutate(folderData);
 		} else {
-			const { folder } = await createFolder(folderData);
+			const folder = await createFolder(folderData);
 			setSelectedFolder(folder);
 			queryClient.invalidateQueries({ queryKey: ["folders"] });
 		}
 	};
 
-	const deleteFolder = async (folderId) => {
-		//TODO: delete folder by ID
-		try {
-			const { folder } = await deleteFolderById(folderId);
-			await mutate(`${API_BASE_URL}/api/folders`); // Revalidate SWR cache
-
-			setSelectedFolder(initialFolders[0]);
-
-			toast.success(`${folder.name} deleted successfully`);
-		} catch (error) {
-			console.log("Error deleting folder", error);
-		}
-		await mutate(`/api/snippets/${selectedFolder._id}`);
-	};
-
 	return (
 		<FolderContext.Provider
 			value={{
-				isLoading,
-				editPending,
 				folders,
-				error,
 				selectedFolder,
 				setSelectedFolder,
 				addFolder,
-				deleteFolder,
+				editMutate,
+				isLoading,
+				editLoading,
+				error,
 			}}
 		>
 			{children}
@@ -96,3 +75,18 @@ export const FolderProvider = ({ children }) => {
 };
 
 export const useFolders = () => useContext(FolderContext);
+
+// const deleteFolder = async (folderId) => {
+// 	//TODO: delete folder by ID
+// 	try {
+// 		const { folder } = await deleteFolderById(folderId);
+// 		await mutate(`${API_BASE_URL}/api/folders`); // Revalidate SWR cache
+
+// 		setSelectedFolder(initialFolders[0]);
+
+// 		toast.success(`${folder.name} deleted successfully`);
+// 	} catch (error) {
+// 		console.log("Error deleting folder", error);
+// 	}
+// 	await mutate(`/api/snippets/${selectedFolder._id}`);
+// };
