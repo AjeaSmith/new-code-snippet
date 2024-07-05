@@ -32,6 +32,7 @@ export const FolderProvider = ({ children }) => {
 			}
 			return response.json();
 		},
+		staleTime: 0,
 	});
 
 	console.log(folders);
