@@ -17,7 +17,7 @@ export const FolderProvider = ({ children }) => {
 
 	const {
 		isLoading,
-		error,
+		error: foldersError,
 		data: folders,
 	} = useQuery({
 		queryKey: ["folders"],
@@ -39,7 +39,11 @@ export const FolderProvider = ({ children }) => {
 		refetchOnReconnect: true,
 	});
 
-	const { mutate: editMutate, isLoading: editLoading } = useMutation({
+	const {
+		mutate: editMutate,
+		isLoading: editLoading,
+		error,
+	} = useMutation({
 		mutationFn: (data) => editFolderById(selectedFolder._id, data),
 		onSuccess: (updatedFolder) => {
 			queryClient.setQueryData(["folders"], (oldFolders) => {
@@ -50,6 +54,7 @@ export const FolderProvider = ({ children }) => {
 			setSelectedFolder(updatedFolder);
 		},
 	});
+	if (error) return <p>Mutation error: {error.message}</p>;
 	console.log(folders);
 	const addFolder = async (folderData, type) => {
 		if (type === "edit") {
