@@ -33,6 +33,9 @@ export const FolderProvider = ({ children }) => {
 		},
 		staleTime: 0,
 		cacheTime: 0,
+		refetchOnWindowFocus: true,
+		refetchOnMount: true,
+		refetchOnReconnect: true,
 	});
 
 	const { mutate: editMutate, isLoading: editLoading } = useMutation({
