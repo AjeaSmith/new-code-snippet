@@ -47,26 +47,24 @@ export const FolderProvider = ({ children, initialFolders }) => {
 		);
 	};
 
-	const handleUpdateFolder = async (data) => {
-		// Perform optimistic update
-		updateFolderOptimistically(data);
+	// const handleUpdateFolder = async (data) => {
+	// 	// Perform optimistic update
+	// 	updateFolderOptimistically(data);
 
-		try {
-			// Make the API call to update the folder
-			const { updatedFolder } = await editFolderById(selectedFolder._id, data);
+	// 	try {
+	// 		// Make the API call to update the folder
 
-			mutate(`${API_BASE_URL}/api/folders`, false);
-		} catch (error) {
-			console.error("Failed to update folder", error);
-			// Revert the optimistic update in case of an error
-			mutate(`${API_BASE_URL}/api/folders`);
-		}
-	};
+	// 		mutate(`${API_BASE_URL}/api/folders`, false);
+	// 	} catch (error) {
+	// 		console.error("Failed to update folder", error);
+	// 		// Revert the optimistic update in case of an error
+	// 		mutate(`${API_BASE_URL}/api/folders`);
+	// 	}
+	// };
 
 	const addFolder = async (folderData, type) => {
-		console.log(type);
 		if (type === "edit") {
-			await handleUpdateFolder(folderData);
+			await editFolderById(selectedFolder._id, folderData);
 			mutate(`${API_BASE_URL}/api/folders`, false);
 		} else {
 			const { folder } = await createFolder(folderData);
