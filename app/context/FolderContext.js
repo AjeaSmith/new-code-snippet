@@ -23,12 +23,12 @@ export const FolderProvider = ({ children }) => {
 		setIsLoading(true);
 		setError(null);
 		try {
-			const response = await fetch(
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/folders`,
-				{
-					cache: "no-store", // Ensure no caching
-				}
-			);
+			const response = await fetch("/api/folders", {
+				method: "GET",
+				headers: {
+					"Cache-Control": "no-cache",
+				},
+			});
 			if (!response.ok) {
 				const errorText = await response.text();
 				throw new Error(`Error ${response.status}: ${errorText}`);
@@ -49,7 +49,7 @@ export const FolderProvider = ({ children }) => {
 		fetchFolders();
 	}, []);
 
-	
+
 	const addFolder = async (folderData, type) => {
 		setIsLoading(true);
 		setError(null);
