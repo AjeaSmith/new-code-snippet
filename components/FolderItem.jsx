@@ -3,7 +3,8 @@ import FolderActions from "./FolderActions";
 import { useFolders } from "@/app/context/FolderContext";
 
 export default function FolderItem({ folder }) {
-	const { editPending, selectedFolder, setSelectedFolder } = useFolders();
+	const { editLoading, selectedFolder, setSelectedFolder, variables } =
+		useFolders();
 
 	return (
 		<li
@@ -17,10 +18,16 @@ export default function FolderItem({ folder }) {
 		>
 			<span className="flex items-center gap-x-3 px-3">
 				<div
-					style={{ backgroundColor: `${folder.color}` }}
+					style={`${
+						editLoading ? "opacity: 0.5" : `backgroundColor: ${folder.color}`
+					}`}
 					className="w-[8px] h-[8px] | rounded-full"
 				/>
-				{truncateText(folder.name, 20)}
+				{editLoading ? (
+					<>{variables.name}</>
+				) : (
+					<>{truncateText(folder.name, 20)}</>
+				)}
 			</span>
 			{selectedFolder?._id === folder._id ? <FolderActions /> : null}
 		</li>

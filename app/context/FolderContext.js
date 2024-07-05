@@ -35,17 +35,21 @@ export const FolderProvider = ({ children }) => {
 		mutate: editMutate,
 		isLoading: editLoading,
 		error,
+		variables,
 	} = useMutation({
 		mutationFn: (data) => editFolderById(selectedFolder._id, data),
-		onSuccess: (updatedFolder) => {
-			queryClient.setQueryData(["folders"], (oldFolders) => {
-				return oldFolders.map((folder) =>
-					folder._id === updatedFolder._id ? updatedFolder : folder
-				);
-			});
-			setSelectedFolder(updatedFolder);
-			queryClient.invalidateQueries(["folders"]);
+		onSettled: async () => {
+			return await queryClient.invalidateQueries({ queryKey: ["folders"] });
 		},
+		// onSuccess: (updatedFolder) => {
+		// 	queryClient.setQueryData(["folders"], (oldFolders) => {
+		// 		return oldFolders.map((folder) =>
+		// 			folder._id === updatedFolder._id ? updatedFolder : folder
+		// 		);
+		// 	});
+		// 	setSelectedFolder(updatedFolder);
+		// 	queryClient.invalidateQueries(["folders"]);
+		// },
 	});
 	const addFolder = async (folderData, type) => {
 		if (type === "edit") {
@@ -117,6 +121,8 @@ export const FolderProvider = ({ children }) => {
 	return (
 		<FolderContext.Provider
 			value={{
+				editLoading,
+				variables,
 				folders,
 				selectedFolder,
 				setSelectedFolder,
