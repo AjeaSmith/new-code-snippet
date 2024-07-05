@@ -38,7 +38,8 @@ export const FolderProvider = ({ children }) => {
 		variables,
 	} = useMutation({
 		mutationFn: (data) => editFolderById(selectedFolder._id, data),
-		onSettled: async () => {
+		onSettled: async (updatedFolder) => {
+			setSelectedFolder(updatedFolder);
 			return await queryClient.invalidateQueries({ queryKey: ["folders"] });
 		},
 		// onSuccess: (updatedFolder) => {
@@ -47,7 +48,6 @@ export const FolderProvider = ({ children }) => {
 		// 			folder._id === updatedFolder._id ? updatedFolder : folder
 		// 		);
 		// 	});
-		// 	setSelectedFolder(updatedFolder);
 		// 	queryClient.invalidateQueries(["folders"]);
 		// },
 	});
