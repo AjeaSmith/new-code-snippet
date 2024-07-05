@@ -38,6 +38,8 @@ export const FolderProvider = ({ children }) => {
 		refetchOnReconnect: true,
 	});
 
+	console.log(folders);
+
 	const { mutate: editMutate, isLoading: editLoading } = useMutation({
 		mutationFn: async (data) => {
 			const updatedFolder = await editFolderById(selectedFolder._id, data);
