@@ -23,7 +23,7 @@ export const FolderProvider = ({ children, initialFolders }) => {
 		data: folders,
 		error,
 		mutate,
-	} = useSWR(`${API_BASE_URL}/api/folders`, fetcher, {
+	} = useSWR(`/api/folders`, fetcher, {
 		revalidateIfStale: false,
 		revalidateOnFocus: false,
 		revalidateOnReconnect: false,
