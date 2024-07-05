@@ -1,14 +1,22 @@
 import Folder from "@/lib/models/folder.model";
 import { connectToDB } from "@/lib/mongoose";
 
-export async function GET(request, res) {
+export async function GET() {
 	try {
 		await connectToDB();
 		const folders = await Folder.find({}).sort({ createdAt: "desc" }).lean();
-		res.setHeader("Cache-Control", "no-store"); // Ensure no caching
-		res.status(200).json(folders);
+		console.log("Fetched folders:", folders); // Add logging
+		return NextResponse.json(folders, {
+			status: 200,
+			headers: {
+				"Cache-Control": "no-store", // Ensure no caching
+			},
+		});
 	} catch (error) {
 		console.error("Failed to fetch folders", error);
-		res.status(500).json({ error: "Failed to fetch folders" });
+		return NextResponse.json(
+			{ error: "Failed to fetch folders" },
+			{ status: 500 }
+		);
 	}
 }
