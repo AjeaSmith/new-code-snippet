@@ -7,7 +7,7 @@ import FolderItem from "./FolderItem";
 import SkeletonUI from "./SkeletonUI";
 
 export default function FolderList() {
-	const { folders, error, isLoading, editLoading } = useFolders();
+	const { folders, error, isLoading } = useFolders();
 
 	if (error)
 		return (
@@ -24,7 +24,7 @@ export default function FolderList() {
 					New Folder
 				</span>
 			</DialogFolderForm>
-			{(isLoading && <SkeletonUI />) || (editLoading && <SkeletonUI />)}
+			{isLoading && <SkeletonUI />}
 
 			{folders && (
 				<nav className="mt-5">

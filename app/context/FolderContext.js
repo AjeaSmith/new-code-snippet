@@ -6,9 +6,8 @@ import {
 	editFolderById,
 } from "@/lib/actions/folder.actions";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const FolderContext = createContext();
@@ -28,35 +27,39 @@ export const FolderProvider = ({ children }) => {
 				const errorText = await response.text();
 				throw new Error(`Error ${response.status}: ${errorText}`);
 			}
-			return await response.json();
+			return response.json();
 		},
 	});
 	const {
 		mutate: editMutate,
-		isLoading: editLoading,
-		error,
+		isPending: editLoading,
 		variables,
+		error,
 	} = useMutation({
 		mutationFn: (data) => editFolderById(selectedFolder._id, data),
-		onSuccess: (updatedFolder) => {
-			// queryClient.setQueryData(["folders"], (oldFolders) => {
-			// 	return oldFolders.map((folder) =>
-			// 		folder._id === updatedFolder._id ? updatedFolder : folder
-			// 	);
-			// });
-			setSelectedFolder(updatedFolder)
-			queryClient.invalidateQueries(["folders"]);
+		onSuccess: ({ data }) => {
+			console.log(data);
+			setSelectedFolder(data);
 		},
+		onSettled: async () => {
+			return await queryClient.invalidateQueries({ queryKey: ["folders"] });
+		},
+		// onSuccess: (updatedFolder) => {
+		// 	setSelectedFolder(updatedFolder);
+		// 	queryClient.invalidateQueries(["folders"]);
+		// },
 	});
 	const addFolder = async (folderData, type) => {
 		if (type === "edit") {
 			editMutate(folderData);
+			// toast.success("Updated Successfully");
 		} else {
 			const folder = await createFolder(folderData);
 			setSelectedFolder(folder);
 			// queryClient.invalidateQueries({ queryKey: ["folders"] });
 		}
 	};
+
 	// const router = useRouter();
 	// const [folders, setFolders] = useState([]);
 	// const [selectedFolder, setSelectedFolder] = useState(null);
@@ -118,8 +121,8 @@ export const FolderProvider = ({ children }) => {
 	return (
 		<FolderContext.Provider
 			value={{
-				editLoading,
 				variables,
+				editLoading,
 				folders,
 				selectedFolder,
 				setSelectedFolder,
