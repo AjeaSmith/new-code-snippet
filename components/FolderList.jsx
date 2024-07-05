@@ -8,7 +8,6 @@ import FolderItem from "./FolderItem";
 export default function FolderList() {
 	const { folders, error, isLoading } = useFolders();
 
-	if (isLoading) return <div>Loading...</div>;
 	if (error)
 		return (
 			<h2 className="p-6 text-center text-xl font-semibold">
@@ -24,6 +23,7 @@ export default function FolderList() {
 					New Folder
 				</span>
 			</DialogFolderForm>
+			{isLoading && <div>Loading...</div>}
 			{folders && (
 				<nav className="mt-5">
 					<ul role="list" aria-label="Folder List">
