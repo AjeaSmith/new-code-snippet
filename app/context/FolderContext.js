@@ -38,18 +38,15 @@ export const FolderProvider = ({ children }) => {
 		variables,
 	} = useMutation({
 		mutationFn: (data) => editFolderById(selectedFolder._id, data),
-		onSettled: async (updatedFolder) => {
-			setSelectedFolder(updatedFolder);
-			return await queryClient.invalidateQueries({ queryKey: ["folders"] });
+		onSuccess: (updatedFolder) => {
+			queryClient.setQueryData(["folders"], (oldFolders) => {
+				return oldFolders.map((folder) =>
+					folder._id === updatedFolder._id ? updatedFolder : folder
+				);
+			});
+			setSelectedFolder(updatedFolder)
+			queryClient.invalidateQueries(["folders"]);
 		},
-		// onSuccess: (updatedFolder) => {
-		// 	queryClient.setQueryData(["folders"], (oldFolders) => {
-		// 		return oldFolders.map((folder) =>
-		// 			folder._id === updatedFolder._id ? updatedFolder : folder
-		// 		);
-		// 	});
-		// 	queryClient.invalidateQueries(["folders"]);
-		// },
 	});
 	const addFolder = async (folderData, type) => {
 		if (type === "edit") {
@@ -57,7 +54,7 @@ export const FolderProvider = ({ children }) => {
 		} else {
 			const folder = await createFolder(folderData);
 			setSelectedFolder(folder);
-			queryClient.invalidateQueries({ queryKey: ["folders"] });
+			// queryClient.invalidateQueries({ queryKey: ["folders"] });
 		}
 	};
 	// const router = useRouter();
