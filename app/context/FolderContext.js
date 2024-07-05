@@ -23,7 +23,11 @@ export const FolderProvider = ({ children, initialFolders }) => {
 		data: folders,
 		error,
 		mutate,
-	} = useSWR(`${API_BASE_URL}/api/folders`, fetcher);
+	} = useSWR(`${API_BASE_URL}/api/folders`, fetcher, {
+		revalidateIfStale: false,
+		revalidateOnFocus: false,
+		revalidateOnReconnect: false,
+	});
 
 	console.log("from context", folders);
 
@@ -45,7 +49,7 @@ export const FolderProvider = ({ children, initialFolders }) => {
 
 	const handleUpdateFolder = async (data) => {
 		// Perform optimistic update
-		// updateFolderOptimistically(data);
+		updateFolderOptimistically(data);
 
 		try {
 			// Make the API call to update the folder
@@ -60,6 +64,7 @@ export const FolderProvider = ({ children, initialFolders }) => {
 	};
 
 	const addFolder = async (folderData, type) => {
+		console.log(type);
 		if (type === "edit") {
 			await handleUpdateFolder(folderData);
 			mutate(`${API_BASE_URL}/api/folders`, false);
