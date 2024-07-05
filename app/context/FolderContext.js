@@ -33,7 +33,7 @@ export const FolderProvider = ({ children }) => {
 			),
 	});
 	const {
-		mutate,
+		mutate: editMutate,
 		isPending: editPending,
 		variables,
 	} = useMutation({
@@ -49,53 +49,9 @@ export const FolderProvider = ({ children }) => {
 		},
 	});
 
-	// const {
-	// 	data: folders,
-	// 	error,
-	// 	mutate,
-	// } = useSWR(`${API_BASE_URL}/api/folders`, fetcher, {
-	// 	revalidateIfStale: true,
-	// 	revalidateOnFocus: false,
-	// 	revalidateOnReconnect: false,
-	// });
-
-	// console.log("from context", folders);
-
-	// // optimistic UI to update the UI locally before network call.
-	// const updateFolderOptimistically = (data) => {
-	// 	const optimisticFolders = folders.map((folder) =>
-	// 		folder._id === selectedFolder._id
-	// 			? { ...folder, name: data.name, color: data.color }
-	// 			: folder
-	// 	);
-
-	// 	mutate(`${API_BASE_URL}/api/folders`, optimisticFolders, false);
-	// 	setSelectedFolder((prev) =>
-	// 		prev && prev._id === selectedFolder._id
-	// 			? { ...prev, name: data.name, color: data.color }
-	// 			: prev
-	// 	);
-	// };
-
-	// const handleUpdateFolder = async (data) => {
-	// 	// Perform optimistic update
-	// 	updateFolderOptimistically(data);
-
-	// 	try {
-	// 		// Make the API call to update the folder
-
-	// 		mutate(`${API_BASE_URL}/api/folders`, false);
-	// 	} catch (error) {
-	// 		console.error("Failed to update folder", error);
-	// 		// Revert the optimistic update in case of an error
-	// 		mutate(`${API_BASE_URL}/api/folders`);
-	// 	}
-	// };
-
 	const addFolder = async (folderData, type) => {
 		if (type === "edit") {
-			mutate(folderData);
-			// await editFolderById(selectedFolder._id, folderData);
+			editMutate(folderData);
 		} else {
 			const { folder } = await createFolder(folderData);
 			setSelectedFolder(folder);

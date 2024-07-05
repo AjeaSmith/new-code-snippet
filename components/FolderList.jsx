@@ -27,7 +27,7 @@ export default function FolderList() {
 				<nav className="mt-5">
 					<ul role="list" aria-label="Folder List">
 						{folders.map((folder) => {
-							return <FolderItem folder={folder} />;
+							return <FolderItem folder={folder} key={folder._id} />;
 						})}
 					</ul>
 				</nav>
