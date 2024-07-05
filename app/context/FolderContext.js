@@ -30,28 +30,30 @@ export const FolderProvider = ({ children }) => {
 				const errorText = await response.text();
 				throw new Error(`Error ${response.status}: ${errorText}`);
 			}
-			return response.json();
+			return await response.json();
 		},
 		staleTime: 0,
+		cacheTime: 0,
+		refetchOnWindowFocus: true,
+		refetchOnMount: true,
+		refetchOnReconnect: true,
 	});
 
-	console.log(folders);
-
 	const { mutate: editMutate, isLoading: editLoading } = useMutation({
-		mutationFn: async (data) => {
-			const updatedFolder = await editFolderById(selectedFolder._id, data);
-			return updatedFolder;
-		},
+		mutationFn: (data) => editFolderById(selectedFolder._id, data),
 		onSuccess: (updatedFolder) => {
-			queryClient.invalidateQueries({ queryKey: ["folders"] });
+			queryClient.setQueryData(["folders"], (oldFolders) => {
+				return oldFolders.map((folder) =>
+					folder._id === updatedFolder._id ? updatedFolder : folder
+				);
+			});
 			setSelectedFolder(updatedFolder);
 		},
 	});
-
+	console.log(folders);
 	const addFolder = async (folderData, type) => {
 		if (type === "edit") {
 			editMutate(folderData);
-			queryClient.invalidateQueries({ queryKey: ["folders"] });
 		} else {
 			const folder = await createFolder(folderData);
 			setSelectedFolder(folder);
