@@ -52,10 +52,9 @@ export const FolderProvider = ({ children }) => {
 				);
 			});
 			setSelectedFolder(updatedFolder);
-			queryClient.invalidateQueries(["folders"]);
 		},
 	});
-	if (error) return <p>Mutation error: {error.message}</p>;
+
 	console.log(folders);
 	const addFolder = async (folderData, type) => {
 		if (type === "edit") {
