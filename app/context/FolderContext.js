@@ -5,65 +5,71 @@ import {
 	deleteFolderById,
 	editFolderById,
 } from "@/lib/actions/folder.actions";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createContext, useContext, useState } from "react";
+
+import { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const FolderContext = createContext();
 
 export const FolderProvider = ({ children }) => {
-	const queryClient = useQueryClient();
+	const [folders, setFolders] = useState([]);
 	const [selectedFolder, setSelectedFolder] = useState(null);
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState(null);
 
-	const {
-		isLoading,
-		error: foldersError,
-		data: folders,
-	} = useQuery({
-		queryKey: ["folders"],
-		queryFn: async () => {
+	const fetchFolders = async () => {
+		setIsLoading(true);
+		setError(null);
+		try {
 			const response = await fetch(
 				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/folders`,
-				{ cache: "no-store" }
+				{
+					cache: "no-store", // Ensure no caching
+				}
 			);
 			if (!response.ok) {
 				const errorText = await response.text();
 				throw new Error(`Error ${response.status}: ${errorText}`);
 			}
-			return await response.json();
-		},
-		staleTime: 0,
-		cacheTime: 0,
-		refetchOnWindowFocus: true,
-		refetchOnMount: true,
-		refetchOnReconnect: true,
-	});
+			const data = await response.json();
+			setFolders(data);
+			if (data.length > 0) {
+				setSelectedFolder(data[0]);
+			}
+		} catch (error) {
+			setError(error.message);
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
-	const {
-		mutate: editMutate,
-		isLoading: editLoading,
-		error,
-	} = useMutation({
-		mutationFn: (data) => editFolderById(selectedFolder._id, data),
-		onSuccess: (updatedFolder) => {
-			queryClient.setQueryData(["folders"], (oldFolders) => {
-				return oldFolders.map((folder) =>
-					folder._id === updatedFolder._id ? updatedFolder : folder
-				);
-			});
-			setSelectedFolder(updatedFolder);
-			queryClient.invalidateQueries({ queryKey: ["folders"] });
-		},
-	});
-
-	console.log(folders);
+	useEffect(() => {
+		fetchFolders();
+	}, []);
 	const addFolder = async (folderData, type) => {
-		if (type === "edit") {
-			editMutate(folderData);
-		} else {
-			const folder = await createFolder(folderData);
-			setSelectedFolder(folder);
-			queryClient.invalidateQueries({ queryKey: ["folders"] });
+		setIsLoading(true);
+		setError(null);
+		try {
+			if (type === "edit") {
+				const updatedFolder = await editFolderById(
+					selectedFolder._id,
+					folderData
+				);
+				setFolders((prevFolders) =>
+					prevFolders.map((folder) =>
+						folder._id === updatedFolder._id ? updatedFolder : folder
+					)
+				);
+				setSelectedFolder(updatedFolder);
+			} else {
+				const newFolder = await createFolder(folderData);
+				setFolders((prevFolders) => [newFolder, ...prevFolders]);
+				setSelectedFolder(newFolder);
+			}
+		} catch (error) {
+			setError(error.message);
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -74,9 +80,7 @@ export const FolderProvider = ({ children }) => {
 				selectedFolder,
 				setSelectedFolder,
 				addFolder,
-				editMutate,
 				isLoading,
-				editLoading,
 				error,
 			}}
 		>
