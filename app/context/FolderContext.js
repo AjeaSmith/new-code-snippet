@@ -23,7 +23,8 @@ export const FolderProvider = ({ children }) => {
 		queryKey: ["folders"],
 		queryFn: async () => {
 			const response = await fetch(
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/folders`
+				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/folders`,
+				{ cache: "no-store" }
 			);
 			if (!response.ok) {
 				const errorText = await response.text();
