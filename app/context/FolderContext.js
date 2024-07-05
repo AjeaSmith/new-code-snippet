@@ -31,11 +31,6 @@ export const FolderProvider = ({ children }) => {
 			}
 			return response.json();
 		},
-		staleTime: 0,
-		cacheTime: 0,
-		refetchOnWindowFocus: true,
-		refetchOnMount: true,
-		refetchOnReconnect: true,
 	});
 
 	console.log(folders);
