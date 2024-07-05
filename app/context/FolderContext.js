@@ -52,6 +52,7 @@ export const FolderProvider = ({ children }) => {
 				);
 			});
 			setSelectedFolder(updatedFolder);
+			queryClient.invalidateQueries(["folders"]);
 		},
 	});
 	if (error) return <p>Mutation error: {error.message}</p>;
