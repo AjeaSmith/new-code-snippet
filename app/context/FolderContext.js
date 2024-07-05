@@ -22,16 +22,30 @@ export const FolderProvider = ({ children }) => {
 		data: folders,
 	} = useQuery({
 		queryKey: ["folders"],
-		queryFn: () =>
-			fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/folders`).then((res) =>
-				res.json()
-			),
+		queryFn: async () => {
+			const response = await fetch(
+				`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/folders`
+			);
+			if (!response.ok) {
+				const errorText = await response.text();
+				throw new Error(`Error ${response.status}: ${errorText}`);
+			}
+			return response.json();
+		},
+		staleTime: 0,
+		cacheTime: 0,
 	});
 
 	const { mutate: editMutate, isPending: editPending } = useMutation({
 		mutationFn: async (data) => {
-			const { updatedFolder } = await editFolderById(selectedFolder._id, data);
+			const response = await editFolderById(selectedFolder._id, data);
+			if (!response.ok) {
+				const errorText = await response.text();
+				throw new Error(`Error ${response.status}: ${errorText}`);
+			}
+			const updatedFolder = await response.json();
 			setSelectedFolder(updatedFolder);
+			return updatedFolder;
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["folders"] });
@@ -44,6 +58,7 @@ export const FolderProvider = ({ children }) => {
 		} else {
 			const { folder } = await createFolder(folderData);
 			setSelectedFolder(folder);
+			queryClient.invalidateQueries({ queryKey: ["folders"] });
 		}
 	};
 
