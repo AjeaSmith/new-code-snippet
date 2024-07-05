@@ -9,6 +9,11 @@ export async function GET(request) {
 		console.log("Fetched folders ==>", folders); // Add logging
 		return NextResponse.json(folders, {
 			status: 200,
+			headers: {
+				"Cache-Control": "no-cache, no-store, must-revalidate",
+				Pragma: "no-cache",
+				Expires: "0",
+			},
 		});
 	} catch (error) {
 		console.error("Failed to fetch folders", error);

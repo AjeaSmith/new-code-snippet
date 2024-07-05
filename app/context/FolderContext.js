@@ -49,7 +49,6 @@ export const FolderProvider = ({ children }) => {
 		fetchFolders();
 	}, []);
 
-
 	const addFolder = async (folderData, type) => {
 		setIsLoading(true);
 		setError(null);
@@ -65,7 +64,6 @@ export const FolderProvider = ({ children }) => {
 					)
 				);
 				setSelectedFolder(updatedFolder);
-				router.refresh();
 			} else {
 				const newFolder = await createFolder(folderData);
 				setFolders((prevFolders) => [newFolder, ...prevFolders]);
