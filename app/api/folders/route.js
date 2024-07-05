@@ -4,7 +4,7 @@ import { connectToDB } from "@/lib/mongoose";
 export async function GET() {
 	try {
 		await connectToDB();
-		const folders = await Folder.find({}).sort({ createdAt: "desc" }).lean();
+		const folders = await Folder.find({}).sort({ createdAt: "desc" });
 
 		return new Response(JSON.stringify(folders), {
 			status: 200,
@@ -13,6 +13,7 @@ export async function GET() {
 			},
 		});
 	} catch (error) {
+		console.log(error)
 		return new Response(JSON.stringify({ error: "Failed to fetch folders" }), {
 			status: 500,
 			headers: {
