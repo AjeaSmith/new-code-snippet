@@ -2,6 +2,7 @@ import Folder from "@/lib/models/folder.model";
 import { connectToDB } from "@/lib/mongoose";
 import { NextResponse } from "next/server";
 
+export const revalidate = 0;
 export async function GET(request) {
 	try {
 		await connectToDB();
