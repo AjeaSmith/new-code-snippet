@@ -39,11 +39,11 @@ export const FolderProvider = ({ children }) => {
 	} = useMutation({
 		mutationFn: (data) => editFolderById(selectedFolder._id, data),
 		onSuccess: (updatedFolder) => {
-			queryClient.setQueryData(["folders"], (oldFolders) => {
-				return oldFolders.map((folder) =>
-					folder._id === updatedFolder._id ? updatedFolder : folder
-				);
-			});
+			// queryClient.setQueryData(["folders"], (oldFolders) => {
+			// 	return oldFolders.map((folder) =>
+			// 		folder._id === updatedFolder._id ? updatedFolder : folder
+			// 	);
+			// });
 			setSelectedFolder(updatedFolder)
 			// queryClient.invalidateQueries(["folders"]);
 		},

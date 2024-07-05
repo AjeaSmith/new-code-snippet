@@ -1,3 +1,5 @@
+'use client'
+
 export default function SkeletonUI() {
 	return (
 		<div className="mt-5 shadow rounded-md p-3 max-w-sm w-full mx-auto">
