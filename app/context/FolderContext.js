@@ -8,10 +8,12 @@ import {
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 const FolderContext = createContext();
 
 export const FolderProvider = ({ children }) => {
+	const router = useRouter();
 	const [folders, setFolders] = useState([]);
 	const [selectedFolder, setSelectedFolder] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
@@ -46,6 +48,8 @@ export const FolderProvider = ({ children }) => {
 	useEffect(() => {
 		fetchFolders();
 	}, []);
+
+	
 	const addFolder = async (folderData, type) => {
 		setIsLoading(true);
 		setError(null);
@@ -61,6 +65,7 @@ export const FolderProvider = ({ children }) => {
 					)
 				);
 				setSelectedFolder(updatedFolder);
+				router.refresh();
 			} else {
 				const newFolder = await createFolder(folderData);
 				setFolders((prevFolders) => [newFolder, ...prevFolders]);
