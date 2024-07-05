@@ -1,31 +1,31 @@
+"use client";
+
 import FolderList from "./FolderList";
 import { FolderProvider } from "@/app/context/FolderContext";
 import SnippetList from "./SnippetList";
 import { SnippetProvider } from "@/app/context/SnippetContext";
 import SnippetContent from "./SnippetContent";
-import Folder from "@/lib/models/folder.model";
-import { connectToDB } from "@/lib/mongoose";
-import { handleError } from "@/lib/utils";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Create a client
 const queryClient = new QueryClient();
-const fetchFolders = async () => {
-	try {
-		await connectToDB();
-		const folders = await Folder.find({}).sort({ createdAt: "desc" }).lean();
+// const fetchFolders = async () => {
+// 	try {
+// 		await connectToDB();
+// 		const folders = await Folder.find({}).sort({ createdAt: "desc" }).lean();
 
-		return folders;
-	} catch (error) {
-		handleError(error, "Failed to fetch folders");
-	}
-};
-export default async function HomeContent() {
-	const folders = await fetchFolders();
+// 		return folders;
+// 	} catch (error) {
+// 		handleError(error, "Failed to fetch folders");
+// 	}
+// };
+export default function HomeContent() {
+	// const folders = await fetchFolders();
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<FolderProvider initialFolders={folders}>
+			<FolderProvider>
 				<SnippetProvider>
 					<section className="flex h-screen">
 						<FolderList />

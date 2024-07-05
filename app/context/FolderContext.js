@@ -5,7 +5,7 @@ import {
 	deleteFolderById,
 	editFolderById,
 } from "@/lib/actions/folder.actions";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	createContext,
 	useCallback,
@@ -17,21 +17,38 @@ import { toast } from "react-toastify";
 
 const FolderContext = createContext();
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-const fetcher = (url) => fetch(url).then((r) => r.json());
+export const FolderProvider = ({ children }) => {
+	const queryClient = useQueryClient();
+	const [selectedFolder, setSelectedFolder] = useState(null);
 
-export const FolderProvider = ({ children, initialFolders }) => {
-	const [selectedFolder, setSelectedFolder] = useState(
-		initialFolders ? initialFolders[0] : null
-	);
-
-	const { isPending, error, data } = useQuery({
+	const {
+		isPending,
+		error,
+		data: folders,
+	} = useQuery({
 		queryKey: ["folders"],
 		queryFn: () =>
-			fetch(`${API_BASE_URL}/api/folders`).then((res) => res.json()),
+			fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/folders`).then((res) =>
+				res.json()
+			),
 	});
-	console.log(isPending);
-	console.log(data);
+	const {
+		mutate,
+		isPending: editPending,
+		variables,
+	} = useMutation({
+		mutationFn: async (data) => {
+			const { updatedFolder } = await editFolderById(selectedFolder._id, data);
+			setSelectedFolder(updatedFolder);
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["folders"] });
+		},
+		onSettled: async () => {
+			return await queryClient.invalidateQueries({ queryKey: ["folders"] });
+		},
+	});
+
 	// const {
 	// 	data: folders,
 	// 	error,
@@ -77,11 +94,11 @@ export const FolderProvider = ({ children, initialFolders }) => {
 
 	const addFolder = async (folderData, type) => {
 		if (type === "edit") {
-			await editFolderById(selectedFolder._id, folderData);
+			mutate(folderData);
+			// await editFolderById(selectedFolder._id, folderData);
 		} else {
 			const { folder } = await createFolder(folderData);
 			setSelectedFolder(folder);
-			await mutate(`${API_BASE_URL}/api/folders`, false);
 		}
 	};
 
@@ -103,6 +120,8 @@ export const FolderProvider = ({ children, initialFolders }) => {
 	return (
 		<FolderContext.Provider
 			value={{
+				variables,
+				editPending,
 				folders,
 				error,
 				selectedFolder,
