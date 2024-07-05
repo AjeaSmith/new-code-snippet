@@ -29,11 +29,7 @@ export const FolderProvider = ({ children }) => {
 		staleTime: 0,
 	});
 
-	const {
-		mutate: editMutate,
-		isPending: editPending,
-		variables,
-	} = useMutation({
+	const { mutate: editMutate, isPending: editPending } = useMutation({
 		mutationFn: async (data) => {
 			const { updatedFolder } = await editFolderById(selectedFolder._id, data);
 			setSelectedFolder(updatedFolder);
@@ -72,7 +68,6 @@ export const FolderProvider = ({ children }) => {
 		<FolderContext.Provider
 			value={{
 				isLoading,
-				variables,
 				editPending,
 				folders,
 				error,
