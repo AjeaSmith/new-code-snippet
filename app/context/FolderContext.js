@@ -23,12 +23,7 @@ export const FolderProvider = ({ children }) => {
 		setIsLoading(true);
 		setError(null);
 		try {
-			const response = await fetch("/api/folders", {
-				method: "GET",
-				headers: {
-					"Cache-Control": "no-cache",
-				},
-			});
+			const response = await fetch("/api/folders");
 			if (!response.ok) {
 				const errorText = await response.text();
 				throw new Error(`Error ${response.status}: ${errorText}`);
