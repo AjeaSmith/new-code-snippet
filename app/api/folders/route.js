@@ -1,5 +1,6 @@
 import Folder from "@/lib/models/folder.model";
 import { connectToDB } from "@/lib/mongoose";
+import { NextResponse } from "next/server";
 
 export async function GET() {
 	try {
