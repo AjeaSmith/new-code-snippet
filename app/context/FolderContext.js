@@ -65,7 +65,6 @@ export const FolderProvider = ({ children, initialFolders }) => {
 	const addFolder = async (folderData, type) => {
 		if (type === "edit") {
 			await editFolderById(selectedFolder._id, folderData);
-			mutate(`${API_BASE_URL}/api/folders`, false);
 		} else {
 			const { folder } = await createFolder(folderData);
 			setSelectedFolder(folder);
