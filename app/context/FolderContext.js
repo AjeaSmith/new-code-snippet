@@ -49,6 +49,7 @@ export const FolderProvider = ({ children }) => {
 	const addFolder = async (folderData, type) => {
 		if (type === "edit") {
 			editMutate(folderData);
+			queryClient.invalidateQueries({ queryKey: ["folders"] });
 		} else {
 			const folder = await createFolder(folderData);
 			setSelectedFolder(folder);
