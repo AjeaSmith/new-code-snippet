@@ -5,12 +5,12 @@ import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import CopyCodeButton from "@/components/CopyCodeButton";
 import SnippetActions from "@/components/SnippetActions";
 import { useSnippets } from "@/app/context/SnippetContext";
-import { FolderPlusIcon, PlusCircleIcon } from "lucide-react";
+import { FolderPlusIcon, LoaderCircleIcon, PlusCircleIcon } from "lucide-react";
 import { useFolders } from "@/app/context/FolderContext";
 import EmptyState from "./EmptyState";
 
 export default function SnippetContent() {
-	const { selectedSnippet, snippets } = useSnippets();
+	const { selectedSnippet, snippets, editLoading } = useSnippets();
 	const { folders } = useFolders();
 
 	// Determine if folders are present
@@ -45,7 +45,11 @@ export default function SnippetContent() {
 								<h1 className="text-3xl font-semibold">
 									{selectedSnippet.name}
 								</h1>
-								<CopyCodeButton snippetCode={selectedSnippet.code} />
+								{editLoading ? (
+									<LoaderCircleIcon className="animate-spin" />
+								) : (
+									<CopyCodeButton snippetCode={selectedSnippet.code} />
+								)}
 							</span>
 							<SnippetActions />
 						</div>

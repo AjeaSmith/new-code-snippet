@@ -129,6 +129,7 @@ export const SnippetProvider = ({ children }) => {
 			value={{
 				error,
 				isLoading,
+				editLoading,
 				snippets,
 				selectedSnippet,
 				setSelectedSnippet,
