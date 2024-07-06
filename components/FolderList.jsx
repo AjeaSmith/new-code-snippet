@@ -25,7 +25,6 @@ export default function FolderList() {
 				</span>
 			</DialogFolderForm>
 			{isLoading && <SkeletonUI />}
-
 			{folders && (
 				<nav className="mt-5">
 					<ul role="list" aria-label="Folder List">

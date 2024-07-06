@@ -15,7 +15,7 @@ const FolderContext = createContext();
 export const FolderProvider = ({ children }) => {
 	const queryClient = useQueryClient();
 	const [selectedFolder, setSelectedFolder] = useState(null);
-	
+
 	const {
 		isLoading,
 		error: foldersError,
@@ -55,6 +55,7 @@ export const FolderProvider = ({ children }) => {
 		mutationFn: (data) => createFolder(data),
 		onSuccess: ({ data }) => {
 			setSelectedFolder(data);
+			queryClient.invalidateQueries({ queryKey: ["folders"] });
 		},
 		onSettled: async () => {
 			return await queryClient.invalidateQueries({ queryKey: ["folders"] });

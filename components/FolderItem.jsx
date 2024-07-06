@@ -1,9 +1,10 @@
 import { truncateText } from "@/lib/utils";
 import FolderActions from "./FolderActions";
 import { useFolders } from "@/app/context/FolderContext";
+import { LoaderCircleIcon } from "lucide-react";
 
 export default function FolderItem({ folder }) {
-	const { selectedFolder, setSelectedFolder } = useFolders();
+	const { selectedFolder, setSelectedFolder, editLoading } = useFolders();
 
 	return (
 		<li
@@ -23,7 +24,8 @@ export default function FolderItem({ folder }) {
 
 				{truncateText(folder.name, 20)}
 			</span>
-			{selectedFolder?._id === folder._id ? <FolderActions /> : null}
+
+			{selectedFolder?._id === folder._id && <FolderActions />}
 		</li>
 	);
 }

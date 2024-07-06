@@ -26,7 +26,7 @@ import { FolderValidation } from "@/lib/validations/folder";
 import { useFolders } from "@/app/context/FolderContext";
 
 export default function FolderForm({ type }) {
-	const { selectedFolder, addFolder, editMutate, addMutation } = useFolders();
+	const { selectedFolder, editMutate, addMutation } = useFolders();
 
 	const form = useForm({
 		resolver: zodResolver(FolderValidation),
@@ -42,10 +42,10 @@ export default function FolderForm({ type }) {
 		try {
 			if (type === "edit") {
 				editMutate(values);
+				form.reset();
 			} else {
 				addMutation(values);
 			}
-			form.reset();
 		} catch (error) {
 			console.log("Error handling folder actions", error);
 		}

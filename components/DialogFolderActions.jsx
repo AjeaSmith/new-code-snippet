@@ -1,5 +1,10 @@
 "use client";
-import { MoreHorizontal, PencilIcon, Trash } from "lucide-react";
+import {
+	LoaderCircleIcon,
+	MoreHorizontal,
+	PencilIcon,
+	Trash,
+} from "lucide-react";
 import { Dialog, DialogTrigger } from "./ui/dialog";
 import {
 	DropdownMenu,
@@ -14,12 +19,16 @@ import FolderForm from "./FolderForm";
 import { useFolders } from "@/app/context/FolderContext";
 
 export default function DialogFolderActions() {
-	const { selectedFolder, deleteFolder } = useFolders();
+	const { selectedFolder, deleteFolder, editLoading } = useFolders();
 	return (
 		<Dialog>
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
-					<MoreHorizontal className="text-accent/85" />
+					{editLoading ? (
+						<LoaderCircleIcon className="animate" />
+					) : (
+						<MoreHorizontal className="text-accent/85" />
+					)}
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="end" className="w-[200px]">
 					<DropdownMenuGroup>
