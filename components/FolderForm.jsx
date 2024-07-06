@@ -75,7 +75,12 @@ export default function FolderForm({ type }) {
 							<FormItem>
 								<FormLabel>Name</FormLabel>
 								<FormControl>
-									<Input type="text" placeholder="e.g React" {...field} />
+									<Input
+										maxLength={25}
+										type="text"
+										placeholder="e.g React"
+										{...field}
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
