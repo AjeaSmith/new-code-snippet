@@ -24,11 +24,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FolderValidation } from "@/lib/validations/folder";
 
 import { useFolders } from "@/app/context/FolderContext";
-import { mutate } from "swr";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 export default function FolderForm({ type }) {
-	const { selectedFolder, addFolder } = useFolders();
+	const { selectedFolder, addFolder, editMutate, addMutation } = useFolders();
 
 	const form = useForm({
 		resolver: zodResolver(FolderValidation),
@@ -42,12 +40,15 @@ export default function FolderForm({ type }) {
 
 	const onSubmit = async (values) => {
 		try {
-			await addFolder(values, type);
-			mutate(`${API_BASE_URL}/api/folders`, false);
+			if (type === "edit") {
+				editMutate(values);
+			} else {
+				addMutation(values);
+			}
+			form.reset();
 		} catch (error) {
 			console.log("Error handling folder actions", error);
 		}
-		form.reset();
 	};
 	return (
 		<DialogContent className="sm:max-w-[425px]">

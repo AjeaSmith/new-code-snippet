@@ -3,7 +3,7 @@ import { connectToDB } from "@/lib/mongoose";
 import { NextResponse } from "next/server";
 
 export const revalidate = 0;
-export async function GET(request) {
+export async function GET() {
 	try {
 		await connectToDB();
 		const folders = await Folder.find({}).sort({ createdAt: "desc" }).lean();

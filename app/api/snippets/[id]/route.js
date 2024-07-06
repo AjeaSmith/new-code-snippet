@@ -1,7 +1,7 @@
 import Snippet from "@/lib/models/snippet.model";
 import { connectToDB } from "@/lib/mongoose";
 
-export async function GET(req, { params }) {
+export async function GET(request, { params }) {
 	const id = params.id;
 	try {
 		await connectToDB();

@@ -15,6 +15,7 @@ const FolderContext = createContext();
 export const FolderProvider = ({ children }) => {
 	const queryClient = useQueryClient();
 	const [selectedFolder, setSelectedFolder] = useState(null);
+	
 	const {
 		isLoading,
 		error: foldersError,
@@ -30,94 +31,65 @@ export const FolderProvider = ({ children }) => {
 			return response.json();
 		},
 	});
+
 	const {
 		mutate: editMutate,
 		isPending: editLoading,
 		variables,
-		error,
+		error: editError,
 	} = useMutation({
 		mutationFn: (data) => editFolderById(selectedFolder._id, data),
+		onSuccess: ({ updatedData }) => {
+			setSelectedFolder(updatedData);
+		},
+		onSettled: async () => {
+			return await queryClient.invalidateQueries({ queryKey: ["folders"] });
+		},
+	});
+
+	const {
+		mutate: addMutation,
+		isPending: addLoading,
+		error: addError,
+	} = useMutation({
+		mutationFn: (data) => createFolder(data),
 		onSuccess: ({ data }) => {
-			console.log(data);
 			setSelectedFolder(data);
 		},
 		onSettled: async () => {
 			return await queryClient.invalidateQueries({ queryKey: ["folders"] });
 		},
-		// onSuccess: (updatedFolder) => {
-		// 	setSelectedFolder(updatedFolder);
-		// 	queryClient.invalidateQueries(["folders"]);
-		// },
 	});
-	const addFolder = async (folderData, type) => {
-		if (type === "edit") {
-			editMutate(folderData);
-			// toast.success("Updated Successfully");
-		} else {
-			const folder = await createFolder(folderData);
-			setSelectedFolder(folder);
-			// queryClient.invalidateQueries({ queryKey: ["folders"] });
+	// const addFolder = async (folderData, type) => {
+	// 	if (type === "edit") {
+	// 		editMutate(folderData);
+	// 		// toast.success("Updated Successfully");
+	// 	} else {
+	// 		addMutation(folderData);
+	// 		// queryClient.invalidateQueries({ queryKey: ["folders"] });
+	// 	}
+	// };
+	const deleteFolder = async (folderId) => {
+		//TODO: delete folder by ID
+		try {
+			const { folder } = await deleteFolderById(folderId);
+
+			setSelectedFolder(folders[0]);
+
+			toast.success(`${folder.name} deleted successfully`);
+			queryClient.invalidateQueries({ queryKey: ["folders"] });
+		} catch (error) {
+			console.log("Error deleting folder", error);
 		}
 	};
 
-	// const router = useRouter();
-	// const [folders, setFolders] = useState([]);
-	// const [selectedFolder, setSelectedFolder] = useState(null);
-	// const [isLoading, setIsLoading] = useState(false);
-	// const [error, setError] = useState(null);
-
-	// const fetchFolders = async () => {
-	// 	setIsLoading(true);
-	// 	setError(null);
-	// 	try {
-	// 		const response = await fetch("/api/folders");
-	// 		if (!response.ok) {
-	// 			const errorText = await response.text();
-	// 			throw new Error(`Error ${response.status}: ${errorText}`);
-	// 		}
-	// 		const data = await response.json();
-	// 		setFolders(data);
-	// 		if (data.length > 0) {
-	// 			setSelectedFolder(data[0]);
-	// 		}
-	// 	} catch (error) {
-	// 		setError(error.message);
-	// 	} finally {
-	// 		setIsLoading(false);
-	// 	}
-	// };
-
-	// useEffect(() => {
-	// 	fetchFolders();
-	// }, []);
-
-	// const addFolder = async (folderData, type) => {
-	// 	setIsLoading(true);
-	// 	setError(null);
-	// 	try {
-	// 		if (type === "edit") {
-	// 			const updatedFolder = await editFolderById(
-	// 				selectedFolder._id,
-	// 				folderData
-	// 			);
-	// 			setFolders((prevFolders) =>
-	// 				prevFolders.map((folder) =>
-	// 					folder._id === updatedFolder._id ? updatedFolder : folder
-	// 				)
-	// 			);
-	// 			setSelectedFolder(updatedFolder);
-	// 		} else {
-	// 			const newFolder = await createFolder(folderData);
-	// 			setFolders((prevFolders) => [newFolder, ...prevFolders]);
-	// 			setSelectedFolder(newFolder);
-	// 		}
-	// 	} catch (error) {
-	// 		setError(error.message);
-	// 	} finally {
-	// 		setIsLoading(false);
-	// 	}
-	// };
-
+	if (addError || foldersError || editError)
+		return (
+			<p>
+				Oops, something bad happened. Not your fault{" "}
+				{addError || foldersError || editError}
+			</p>
+		);
 	return (
 		<FolderContext.Provider
 			value={{
@@ -125,10 +97,11 @@ export const FolderProvider = ({ children }) => {
 				editLoading,
 				folders,
 				selectedFolder,
+				editMutate,
+				addMutation,
+				deleteFolder,
 				setSelectedFolder,
-				addFolder,
 				isLoading,
-				error,
 			}}
 		>
 			{children}
@@ -137,18 +110,3 @@ export const FolderProvider = ({ children }) => {
 };
 
 export const useFolders = () => useContext(FolderContext);
-
-// const deleteFolder = async (folderId) => {
-// 	//TODO: delete folder by ID
-// 	try {
-// 		const { folder } = await deleteFolderById(folderId);
-// 		await mutate(`${API_BASE_URL}/api/folders`); // Revalidate SWR cache
-
-// 		setSelectedFolder(initialFolders[0]);
-
-// 		toast.success(`${folder.name} deleted successfully`);
-// 	} catch (error) {
-// 		console.log("Error deleting folder", error);
-// 	}
-// 	await mutate(`/api/snippets/${selectedFolder._id}`);
-// };

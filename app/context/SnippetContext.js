@@ -1,7 +1,6 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import useSWR, { mutate } from "swr";
 import { toast } from "react-toastify";
 import { useFolders } from "./FolderContext";
 import {
@@ -10,42 +9,49 @@ import {
 	editSnippetById,
 } from "@/lib/actions/snippet.actions";
 import { truncateText } from "@/lib/utils";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const SnippetContext = createContext();
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
-
 export const SnippetProvider = ({ children }) => {
+	const queryClient = useQueryClient();
 	const [selectedSnippet, setSelectedSnippet] = useState(null);
 
 	const { selectedFolder } = useFolders();
 
 	const {
-		data: snippets,
 		isLoading,
 		error,
-	} = useSWR(
-		selectedFolder ? `/api/snippets/${selectedFolder._id}` : null,
-		fetcher
-	);
+		data: snippets,
+	} = useQuery({
+		queryKey: ["snippets", selectedFolder?._id],
+		queryFn: async () => {
+			const response = await fetch(`/api/snippets/${selectedFolder._id}`);
+			if (!response.ok) {
+				const errorText = await response.text();
+				throw new Error(`Error ${response.status}: ${errorText}`);
+			}
+			return response.json();
+		},
+		enabled: !!selectedFolder,
+	});
 
 	useEffect(() => {
 		setSelectedSnippet(null); // Reset selected note when folder changes
 	}, [selectedFolder]);
 
-	const handleUpdateSnippet = async (snippetId, data) => {
-		try {
-			// Make the API call to update the snippet
-			const { updatedSnippet } = await editSnippetById(snippetId, data);
+	// const handleUpdateSnippet = async (snippetId, data) => {
+	// 	try {
+	// 		// Make the API call to update the snippet
+	// 		const { updatedSnippet } = await editSnippetById(snippetId, data);
 
-			return updatedSnippet;
-		} catch (error) {
-			toast.error(error);
-			// Revert the optimistic update in case of an error
-			mutate(`/api/snippets/${selectedFolder._id}`);
-		}
-	};
+	// 		return updatedSnippet;
+	// 	} catch (error) {
+	// 		toast.error(error);
+	// 		// Revert the optimistic update in case of an error
+	// 		mutate(`/api/snippets/${selectedFolder._id}`);
+	// 	}
+	// };
 
 	const addSnippet = async (values, type) => {
 		// TODO: Add snippet
@@ -69,8 +75,6 @@ export const SnippetProvider = ({ children }) => {
 				toast.error(error);
 			}
 		}
-		// Revalidate the snippets list after a successful update
-		mutate(`/api/snippets/${selectedFolder._id}`, false);
 	};
 
 	const deleteSnippet = async (snippetId) => {
@@ -79,7 +83,6 @@ export const SnippetProvider = ({ children }) => {
 		} catch (error) {
 			toast.error(error);
 		}
-		mutate(`/api/snippets/${selectedFolder._id}`, false);
 		setSelectedSnippet(null);
 	};
 

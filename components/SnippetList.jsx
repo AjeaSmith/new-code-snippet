@@ -26,7 +26,7 @@ export default function SnippetList() {
 					<LoaderCircleIcon className="animate-spin w-10 h-10" />
 				</div>
 			)}
-			{!selectedFolder || !snippets ? null : (
+			{!snippets ? null : (
 				<>
 					<div className="mb-8 | flex items-center justify-between">
 						<h1 className="text-xl text-white | font-semibold">
