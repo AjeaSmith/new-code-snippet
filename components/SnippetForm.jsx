@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import { useForm, FormProvider, useFormState } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SnippetValidation } from "@/lib/validations/snippet";
@@ -32,26 +33,44 @@ import {
 import { useSnippets } from "@/app/context/SnippetContext";
 
 export default function SnippetForm({ type, setOpen }) {
-	const { addSnippet, selectedSnippet } = useSnippets();
+	const { editMutate, addMutation, selectedSnippet } = useSnippets();
 
 	const form = useForm({
 		resolver: zodResolver(SnippetValidation),
 		defaultValues: {
-			name: type === "edit" ? selectedSnippet.name : "",
-			description: type === "edit" ? selectedSnippet.description : "",
-			code: type === "edit" ? selectedSnippet.code : "",
-			language: type === "edit" ? selectedSnippet.language : "javascript",
+			name: "",
+			description: "",
+			code: "",
+			language: "javascript",
 		},
 	});
+	// Watch selectedSnippet and reset form values when it changes
+	useEffect(() => {
+		if (type === "edit" && selectedSnippet) {
+			form.reset({
+				name: selectedSnippet.name,
+				description: selectedSnippet.description,
+				code: selectedSnippet.code,
+				language: selectedSnippet.language,
+			});
+		}
+	}, [selectedSnippet, type, form.reset]);
 
 	const { isSubmitting } = useFormState({ control: form.control });
 
 	const language = form.watch("language");
 
 	const onSubmit = async (values) => {
-		await addSnippet(values, type);
-
-		form.reset();
+		try {
+			if (type === "edit") {
+				editMutate(values);
+			} else {
+				addMutation(values);
+			}
+			form.reset();
+		} catch (error) {
+			console.log("Error handling folder actions", error);
+		}
 		setOpen(false);
 	};
 

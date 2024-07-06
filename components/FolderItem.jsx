@@ -1,10 +1,9 @@
 import { truncateText } from "@/lib/utils";
 import FolderActions from "./FolderActions";
 import { useFolders } from "@/app/context/FolderContext";
-import { LoaderCircleIcon } from "lucide-react";
 
 export default function FolderItem({ folder }) {
-	const { selectedFolder, setSelectedFolder, editLoading } = useFolders();
+	const { selectedFolder, setSelectedFolder } = useFolders();
 
 	return (
 		<li

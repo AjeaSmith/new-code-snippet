@@ -47,29 +47,16 @@ export const FolderProvider = ({ children }) => {
 		},
 	});
 
-	const {
-		mutate: addMutation,
-		isPending: addLoading,
-		error: addError,
-	} = useMutation({
+	const { mutate: addMutation, error: addError } = useMutation({
 		mutationFn: (data) => createFolder(data),
 		onSuccess: ({ data }) => {
 			setSelectedFolder(data);
-			queryClient.invalidateQueries({ queryKey: ["folders"] });
 		},
 		onSettled: async () => {
 			return await queryClient.invalidateQueries({ queryKey: ["folders"] });
 		},
 	});
-	// const addFolder = async (folderData, type) => {
-	// 	if (type === "edit") {
-	// 		editMutate(folderData);
-	// 		// toast.success("Updated Successfully");
-	// 	} else {
-	// 		addMutation(folderData);
-	// 		// queryClient.invalidateQueries({ queryKey: ["folders"] });
-	// 	}
-	// };
+
 	const deleteFolder = async (folderId) => {
 		//TODO: delete folder by ID
 		try {
