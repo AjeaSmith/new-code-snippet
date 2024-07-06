@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import {
 	DialogContent,
 	DialogHeader,
@@ -31,11 +32,19 @@ export default function FolderForm({ type }) {
 	const form = useForm({
 		resolver: zodResolver(FolderValidation),
 		defaultValues: {
-			name: type === "edit" ? selectedFolder.name : "",
-			color: type === "edit" ? selectedFolder.color : "#ffffff",
+			name: "",
+			color: "#ffffff",
 		},
 	});
-
+	// Watch selectedFolder and reset form values when it changes
+	useEffect(() => {
+		if (type === "edit" && selectedFolder) {
+			form.reset({
+				name: selectedFolder.name,
+				color: selectedFolder.color,
+			});
+		}
+	}, [selectedFolder, type, form.reset]);
 	const { isSubmitting } = useFormState({ control: form.control });
 
 	const onSubmit = async (values) => {
