@@ -25,7 +25,7 @@ export default function DialogFolderActions() {
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
 					{editLoading ? (
-						<LoaderCircleIcon className="animate" />
+						<LoaderCircleIcon className="animate-spin" />
 					) : (
 						<MoreHorizontal className="text-accent/85" />
 					)}

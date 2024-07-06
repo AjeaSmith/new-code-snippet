@@ -51,10 +51,10 @@ export default function FolderForm({ type }) {
 		try {
 			if (type === "edit") {
 				editMutate(values);
-				form.reset();
 			} else {
 				addMutation(values);
 			}
+			form.reset();
 		} catch (error) {
 			console.log("Error handling folder actions", error);
 		}
