@@ -8,7 +8,6 @@ import {
 	deleteSnippetById,
 	editSnippetById,
 } from "@/lib/actions/snippet.actions";
-import { truncateText } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const SnippetContext = createContext();
@@ -21,7 +20,7 @@ export const SnippetProvider = ({ children }) => {
 
 	const {
 		isLoading,
-		error,
+		error: snippetsError,
 		data: snippets,
 	} = useQuery({
 		queryKey: ["snippets", selectedFolder?._id],
@@ -43,7 +42,6 @@ export const SnippetProvider = ({ children }) => {
 	const {
 		mutate: editMutate,
 		isPending: editLoading,
-		variables,
 		error: editError,
 	} = useMutation({
 		mutationFn: (data) => editSnippetById(selectedSnippet._id, data),
@@ -55,7 +53,11 @@ export const SnippetProvider = ({ children }) => {
 		},
 	});
 
-	const { mutate: addMutation, error: addError } = useMutation({
+	const {
+		mutate: addMutation,
+		error: addError,
+		isPending: addLoading,
+	} = useMutation({
 		mutationFn: (data) => createSnippet(data, selectedFolder._id),
 		onSuccess: ({ snippet }) => {
 			setSelectedSnippet(snippet);
@@ -69,66 +71,27 @@ export const SnippetProvider = ({ children }) => {
 		//TODO: delete folder by ID
 		try {
 			await deleteSnippetById(snippetId);
-
-			setSelectedSnippet(snippets[0]);
-
 			toast.success("deleted successfully");
-			queryClient.invalidateQueries({ queryKey: ["folders"] });
+			queryClient.invalidateQueries({ queryKey: ["snippets"] });
 		} catch (error) {
 			console.log("Error deleting snippet", error);
 		}
+		setSelectedSnippet(null);
 	};
-	// const handleUpdateSnippet = async (snippetId, data) => {
-	// 	try {
-	// 		// Make the API call to update the snippet
-	// 		const { updatedSnippet } = await editSnippetById(snippetId, data);
 
-	// 		return updatedSnippet;
-	// 	} catch (error) {
-	// 		toast.error(error);
-	// 		// Revert the optimistic update in case of an error
-	// 		mutate(`/api/snippets/${selectedFolder._id}`);
-	// 	}
-	// };
-
-	// const addSnippet = async (values, type) => {
-	// 	// TODO: Add snippet
-	// 	if (type === "edit") {
-	// 		const updatedSnippet = await handleUpdateSnippet(
-	// 			selectedSnippet._id,
-	// 			values
-	// 		);
-
-	// 		setSelectedSnippet(updatedSnippet);
-	// 		toast.success("Updated successfully!");
-	// 	} else {
-	// 		try {
-	// 			const { snippet } = await createSnippet(values, selectedFolder._id);
-
-	// 			setSelectedSnippet(snippet);
-	// 			toast.success(
-	// 				`Created ${truncateText(snippet.name, 15)} successfully!`
-	// 			);
-	// 		} catch (error) {
-	// 			toast.error(error);
-	// 		}
-	// 	}
-	// };
-
-	// const deleteSnippet = async (snippetId) => {
-	// 	try {
-	// 		await deleteSnippetById(snippetId);
-	// 	} catch (error) {
-	// 		toast.error(error);
-	// 	}
-	// 	setSelectedSnippet(null);
-	// };
+	if (addError || editError)
+		return (
+			<p>
+				Oops, something bad happened. Not your fault {addError || editError}
+			</p>
+		);
 
 	return (
 		<SnippetContext.Provider
 			value={{
-				error,
+				snippetsError,
 				isLoading,
+				addLoading,
 				editLoading,
 				snippets,
 				selectedSnippet,

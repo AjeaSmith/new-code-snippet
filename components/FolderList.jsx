@@ -4,7 +4,7 @@ import { FolderPlusIcon } from "lucide-react";
 import DialogFolderForm from "./DialogFolderForm";
 import { useFolders } from "@/app/context/FolderContext";
 import FolderItem from "./FolderItem";
-import SkeletonUI from "./SkeletonUI";
+import SkeletonUI from "./skeletons/SkeletonUI";
 
 export default function FolderList() {
 	const { folders, error, isLoading } = useFolders();
