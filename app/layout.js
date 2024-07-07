@@ -1,9 +1,7 @@
 import Head from "next/head";
-import FolderList from "@/components/FolderList";
 import "./globals.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import SnippetList from "@/components/SnippetList";
 
 export const metadata = {
 	title: "CodeHub: Your Ultimate Code Snippet Repository",

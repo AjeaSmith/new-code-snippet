@@ -36,7 +36,7 @@ export default function SnippetList() {
 					)}
 				</h1>
 				{addLoading && <LoaderCircleIcon className="animate-spin" />}
-				<DialogSnippetForm />
+				{selectedFolder && <DialogSnippetForm />}
 			</div>
 			<nav>
 				<ul>

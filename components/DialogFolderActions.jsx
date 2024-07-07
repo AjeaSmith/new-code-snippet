@@ -19,7 +19,7 @@ import FolderForm from "./FolderForm";
 import { useFolders } from "@/app/context/FolderContext";
 
 export default function DialogFolderActions() {
-	const { selectedFolder, deleteFolder, editLoading } = useFolders();
+	const { selectedFolder, deleteFolder, editLoading } = useFolders()
 	return (
 		<Dialog>
 			<DropdownMenu>
